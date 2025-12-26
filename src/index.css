@@ -57,6 +57,14 @@ body::before {
   filter: drop-shadow(0 0 20px rgba(0, 0, 255, 0.3));
 }
 
+.radio-gradient-text {
+  background: linear-gradient(135deg, #ff4444 0%, #cc0000 60%, #8b0000 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.5));
+}
+
 /* Glass Card from Reference */
 .glass-panel {
   background: rgba(255, 255, 255, 0.03);
