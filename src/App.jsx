@@ -250,19 +250,19 @@ function App() {
       {/* Logo Section */}
       <div className="text-center mb-2 relative">
         <h1 className="logo-text text-6xl md:text-8xl font-black tracking-tighter mb-0">
-          <span className="text-white">SERG</span><span className="radio-gradient-text">Radio</span>
+          <span className="text-blue-700 tracking-tighter">SERG</span><span className="radio-gradient-text">Radio</span>
         </h1>
         <div className="text-right pr-2 md:pr-4 -mt-1">
-          <span className="text-gray-400 font-light text-xs md:text-sm tracking-wide">by </span>
-          <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="text-yellow-400 font-bold text-xs md:text-sm hover:text-yellow-200 transition-all">@SERG</a>
+          <span className="text-gray-500 font-bold text-xs md:text-sm tracking-wide uppercase">by </span>
+          <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="text-blue-500 font-black text-xs md:text-sm hover:text-white transition-all uppercase">@SERG</a>
         </div>
       </div>
 
       {/* Live Status & Listeners */}
       <div className="flex flex-col items-center mb-6 space-y-2 pointer-events-auto z-20 relative">
-        <div className="flex items-center space-x-2 bg-yellow-500/10 px-4 py-1.5 rounded-full border border-yellow-500/20 backdrop-blur-md">
-          <div className="w-2 h-2 rounded-full bg-yellow-500 animate-pulse"></div>
-          <span className="text-yellow-500 font-bold text-xs tracking-widest uppercase">LIVE AIR</span>
+        <div className="flex items-center space-x-2 bg-black/40 px-4 py-1.5 rounded-full border border-blue-900/50 backdrop-blur-md shadow-lg shadow-blue-900/20">
+          <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></div>
+          <span className="text-gray-200 font-black text-xs tracking-[0.2em] uppercase">LIVE AIR</span>
         </div>
 
         <div className="text-gray-400 text-xs font-medium flex items-center space-x-1">

@@ -1,49 +1,43 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <!-- Nanobana Gradient: Bright Yellow to Gold -->
-    <linearGradient id="bananaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#ffff00;stop-opacity:1" /> <!-- Neon Yellow -->
-      <stop offset="60%" style="stop-color:#ffd700;stop-opacity:1" /> <!-- Gold -->
-      <stop offset="100%" style="stop-color:#ffa500;stop-opacity:1" /> <!-- Orange hint -->
+    <!-- Hip Hop Gold-->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#B8860B;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B4513;stop-opacity:1" />
+    </linearGradient>
+
+    <!-- Deep Blue Metallic -->
+    <linearGradient id="blueMetal" x1="0%" y1="0%" x2="0%" y2="100%">
+       <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+       <stop offset="50%" style="stop-color:#172554;stop-opacity:1" />
+       <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
     </linearGradient>
     
     <!-- Dark Glow -->
     <filter id="darkGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="10" result="blur"/>
-      <feFlood flood-color="#000000" flood-opacity="0.9" result="black"/>
-      <feComposite in="black" in2="blur" operator="in" result="blackBlur"/>
+      <feGaussianBlur stdDeviation="15" result="coloredBlur"/>
       <feMerge>
-        <feMergeNode in="blackBlur"/>
+        <feMergeNode in="coloredBlur"/>
         <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
-    
-    <!-- Yellow Light Glow -->
-    <filter id="yellowGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="15" result="blur" />
-      <feMerge>
-        <feMergeNode in="blur" />
-        <feMergeNode in="SourceGraphic" />
       </feMerge>
     </filter>
   </defs>
   
-  <!-- Background: Deep Black -->
-  <rect width="512" height="512" rx="100" fill="#000000" />
+  <!-- Background: Matte Black -->
+  <rect width="512" height="512" rx="100" fill="#050505" />
   
-  <!-- Outer Ring (Gold) -->
-  <circle cx="256" cy="256" r="170" stroke="url(#bananaGrad)" stroke-width="8" fill="none" opacity="0.4" filter="url(#darkGlow)" />
+  <!-- Outer Ring (Dark Blue) -->
+  <circle cx="256" cy="256" r="180" stroke="url(#blueMetal)" stroke-width="20" fill="none" opacity="0.8" />
   
-  <!-- Main Ring (Neon Yellow) -->
-  <circle cx="256" cy="256" r="150" stroke="url(#bananaGrad)" stroke-width="12" fill="none" filter="url(#yellowGlow)" />
-  
-  <!-- Audio Waveform (Modern Tech) -->
-  <path d="M120 256 L150 256 L180 190 L215 320 L250 160 L285 330 L320 200 L355 256 L390 256" 
-        stroke="url(#bananaGrad)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#yellowGlow)" />
+  <!-- Inner Ring (Gold Accents) -->
+  <circle cx="256" cy="256" r="150" stroke="url(#goldGrad)" stroke-width="4" fill="none" opacity="0.6" filter="url(#darkGlow)" />
+
+  <!-- Audio Bars (Red Blood) -->
+  <path d="M120 256 L150 256 L180 160 L215 340 L250 120 L285 360 L320 180 L355 256 L390 256" 
+        stroke="#8b0000" stroke-width="12" stroke-linecap="butt" stroke-linejoin="miter" fill="none" filter="url(#darkGlow)" />
         
-  <!-- Nano Dots (Tech Vibe) -->
-  <circle cx="256" cy="100" r="4" fill="#ffff00" opacity="0.8" />
-  <circle cx="256" cy="412" r="4" fill="#ffff00" opacity="0.8" />
-  <circle cx="100" cy="256" r="4" fill="#ffff00" opacity="0.8" />
-  <circle cx="412" cy="256" r="4" fill="#ffff00" opacity="0.8" />
+  <!-- Center Glow -->
+  <circle cx="256" cy="256" r="40" fill="url(#goldGrad)" opacity="0.1" filter="url(#darkGlow)" />
+
 </svg>
