@@ -253,7 +253,7 @@ function App() {
           <span className="text-blue-700 tracking-tighter serg-blue-text">SERG</span><span className="radio-gradient-text">Radio</span>
         </h1>
         <div className="text-right pr-2 md:pr-4 -mt-1">
-          <span className="text-gray-500 font-bold text-xs md:text-sm tracking-wide uppercase">by </span>
+          <span className="text-gray-500 font-bold text-xs md:text-sm tracking-wide lowercase">by </span>
           <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="text-blue-500 font-black text-xs md:text-sm hover:text-white transition-all uppercase">@SERG</a>
         </div>
       </div>
