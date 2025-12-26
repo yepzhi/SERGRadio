@@ -249,9 +249,11 @@ function App() {
 
       {/* Logo Section */}
       <div className="text-center mb-2">
-        <h1 className="logo-text text-6xl md:text-8xl font-black tracking-tighter mb-2">SERGRadio</h1>
-        <div className="text-gray-400 font-light tracking-widest text-sm md:text-base max-w-lg mx-auto mb-6">
-          We don't play what you want, we play what you need
+        <h1 className="logo-text text-6xl md:text-8xl font-black tracking-tighter mb-2">
+          <span className="text-blue-600">SERG</span><span className="text-red-600">Radio</span>
+        </h1>
+        <div className="text-gray-200 font-light tracking-widest text-sm md:text-base max-w-lg mx-auto mb-6">
+          World class DJ, by <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="text-white font-bold hover:text-blue-400 underline decoration-blue-500/30 hover:decoration-blue-500 transition-all">@SERG</a>
         </div>
       </div>
 
@@ -319,22 +321,10 @@ function App() {
       </div>
 
 
-      {/* AdSpace */}
-      <div className="w-full flex justify-center mb-4 md:mb-6 lg:mb-8">
-        <AdSpace />
-      </div>
-
       {/* Footer */}
-      <div className="absolute bottom-2 w-full flex flex-col md:flex-row justify-between items-end px-8 z-20 pointer-events-none gap-2 md:gap-0">
-        <div className="pointer-events-auto">
-          <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="text-gray-600 hover:text-gray-400 transition-colors text-xs font-medium block max-w-md text-left leading-tight">
-            Do you like this? 💙 <span className="text-blue-600 hover:text-blue-500 font-normal transition-colors">Invest in this project, make this a real radio station. click here to know more.</span>
-          </a>
-        </div>
-        <div className="pointer-events-auto">
-          <div className="text-gray-600 text-[10px] tracking-wide">
-            Created by <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-500 transition-colors font-bold">@yepzhi</a> <span className="text-gray-500">v1.0.0</span>
-          </div>
+      <div className="absolute bottom-2 w-full flex flex-col items-center justify-center px-8 z-20 pointer-events-none gap-1">
+        <div className="pointer-events-auto text-gray-500 text-[10px] tracking-wide text-center">
+          Made by <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="text-white hover:text-blue-400 font-bold transition-colors">@SERG</a>, Site created by <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="text-white hover:text-blue-400 font-bold transition-colors">@yepzhi</a>
         </div>
       </div>
 

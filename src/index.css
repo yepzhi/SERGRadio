@@ -33,8 +33,8 @@ body::before {
   pointer-events: none;
   z-index: -1;
   background:
-    radial-gradient(circle at 20% 50%, rgba(220, 20, 60, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(139, 0, 0, 0.1) 0%, transparent 50%);
+    radial-gradient(circle at 20% 50%, rgba(0, 0, 255, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(255, 0, 0, 0.1) 0%, transparent 50%);
   animation: bg-pulse 8s ease-in-out infinite;
 }
 
@@ -52,13 +52,9 @@ body::before {
 
 /* Logo Style from Reference */
 .logo-text {
-  background: linear-gradient(135deg, #fbbf24 0%, #ff0000 50%, #8b0000 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 80px rgba(255, 0, 0, 0.4);
-  filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.3));
-  /* Gold Glow */
+  /* No gradient here, applied via spans in JSX */
+  text-shadow: 0 0 80px rgba(0, 0, 255, 0.4);
+  filter: drop-shadow(0 0 20px rgba(0, 0, 255, 0.3));
 }
 
 /* Glass Card from Reference */
@@ -74,23 +70,23 @@ body::before {
 
 /* Play Button from Reference */
 .play-btn-glow {
-  background: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(139, 0, 0, 0.2));
+  background: linear-gradient(135deg, rgba(0, 0, 255, 0.2), rgba(0, 0, 139, 0.2));
   backdrop-filter: blur(10px);
   box-shadow:
-    0 0 40px rgba(255, 0, 0, 0.3),
-    inset 0 0 20px rgba(255, 0, 0, 0.1);
-  border: 3px solid rgba(255, 0, 0, 0.3);
+    0 0 40px rgba(0, 0, 255, 0.3),
+    inset 0 0 20px rgba(0, 0, 255, 0.1);
+  border: 3px solid rgba(0, 0, 255, 0.3);
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .play-btn-glow:hover {
   transform: scale(1.1);
   box-shadow:
-    0 0 60px rgba(255, 215, 0, 0.5),
-    /* Gold hover glow */
-    inset 0 0 30px rgba(255, 0, 0, 0.2);
-  border-color: rgba(255, 215, 0, 0.6);
-  /* Gold border */
+    0 0 60px rgba(255, 255, 255, 0.5),
+    /* White hover glow */
+    inset 0 0 30px rgba(0, 0, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
+  /* White border */
 }
 
 /* Live Dot Animation */
@@ -99,12 +95,12 @@ body::before {
   0%,
   100% {
     opacity: 1;
-    box-shadow: 0 0 10px #ff0000;
+    box-shadow: 0 0 10px #0000ff;
   }
 
   50% {
     opacity: 0.4;
-    box-shadow: 0 0 5px #ff0000;
+    box-shadow: 0 0 5px #0000ff;
   }
 }
 
