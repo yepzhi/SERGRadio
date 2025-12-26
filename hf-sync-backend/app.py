@@ -28,7 +28,7 @@ BASE_URL = "https://huggingface.co/spaces/yepzhi/sergradio-sync/resolve/main/tra
 TRACKS_DIR = "tracks"
 os.makedirs(TRACKS_DIR, exist_ok=True)
 
-# Playlist: Long Mixes (Hosted on GitHub Pages / yepzhi.com)
+# Playlist: Long Mixes (Hosted on Hugging Face Spaces)
 PLAYLIST = [
     {"id": "m1", "title": "Doble B Sat 9 Feb Rec 1", "artist": "Serg", "file": "DOBLE B SAT 9 FEB Rec 1.mp3", "weight": 1},
     {"id": "m2", "title": "Doble B Sat 9 Feb Rec 2", "artist": "Serg", "file": "DOBLE B SAT 9 FEB Rec 2.mp3", "weight": 1},
