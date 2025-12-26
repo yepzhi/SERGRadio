@@ -1,0 +1,28 @@
+name: Sync Backend to Hugging Face
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'hf-sync-backend/**'
+  workflow_dispatch:
+
+jobs:
+  sync-to-hub:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Push to Hub
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          cd hf-sync-backend
+          git init
+          git config user.email "bot@yepzhi.com"
+          git config user.name "Deployment Bot"
+          git add .
+          git commit -m "Deploy to HF Space"
+          git push -f https://yepzhi:$HF_TOKEN@huggingface.co/spaces/yepzhi/sergradio-sync master:main
