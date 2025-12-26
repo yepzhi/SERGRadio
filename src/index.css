@@ -50,17 +50,22 @@ body::before {
   }
 }
 
-/* Logo Style from Reference */
-.logo-text {
+/* Logo Base Font */
+.logo-base {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  /* Neon Fog: Blue Glow with White Core */
-  text-shadow:
-    0 0 10px rgba(0, 0, 255, 0.8),
-    0 0 20px rgba(0, 0, 255, 0.6),
-    0 0 40px rgba(0, 0, 255, 0.4),
-    0 0 80px rgba(0, 0, 255, 0.2);
-  filter: drop-shadow(0 0 15px rgba(0, 0, 255, 0.5));
   letter-spacing: -2px;
+}
+
+/* SERG - Blue Fog Glow (Intensified) */
+.serg-blue-text {
+  text-shadow:
+    0 0 10px rgba(0, 0, 255, 0.9),
+    0 0 30px rgba(0, 0, 255, 0.7),
+    0 0 60px rgba(0, 0, 255, 0.5),
+    /* Wider Fog */
+    0 0 100px rgba(0, 0, 255, 0.3);
+  /* Ambient Mist */
+  filter: drop-shadow(0 0 20px rgba(0, 0, 255, 0.6));
 }
 
 .radio-gradient-text {
@@ -70,8 +75,8 @@ body::before {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  /* Neon Fog: Red Glow reflecting in mist */
-  filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.6)) drop-shadow(0 0 30px rgba(255, 0, 0, 0.4)) drop-shadow(0 0 60px rgba(139, 0, 0, 0.2));
+  /* Red Fog Glow (Intensified) */
+  filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.8)) drop-shadow(0 0 40px rgba(255, 0, 0, 0.5)) drop-shadow(0 0 80px rgba(139, 0, 0, 0.3));
   padding-left: 0px;
 }
 
