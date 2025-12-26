@@ -50,19 +50,31 @@ body::before {
   }
 }
 
+@import url('https://fonts.googleapis.com/css2?family=Righteous&family=Yellowtail&display=swap');
+
 /* Logo Style from Reference */
 .logo-text {
+  font-family: 'Yellowtail', cursive;
+  /* Modern Cursive */
   /* No gradient here, applied via spans in JSX */
-  text-shadow: 0 0 80px rgba(0, 0, 255, 0.4);
-  filter: drop-shadow(0 0 20px rgba(0, 0, 255, 0.3));
+  text-shadow: 0 0 80px rgba(0, 0, 0, 0.9);
+  /* Deep Black Glow */
+  filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.8));
+  /* Intense Black Shadow */
+  letter-spacing: 2px;
 }
 
 .radio-gradient-text {
+  font-family: 'Righteous', sans-serif;
+  /* Keep RADIO modern/tech or cursive too? Let's use Righteous for contrast or Yellowtail for match. User said "otra tipografia moderna cursiva". Let's apply cursive to WHOLE title. */
+  font-family: 'Yellowtail', cursive;
   background: linear-gradient(135deg, #ff4444 0%, #cc0000 60%, #8b0000 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 15px rgba(255, 0, 0, 0.5));
+  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.9));
+  /* Black Glow on Radio too */
+  padding-left: 10px;
 }
 
 /* Glass Card from Reference */
