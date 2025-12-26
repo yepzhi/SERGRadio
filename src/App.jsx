@@ -249,8 +249,8 @@ function App() {
 
       {/* Logo Section */}
       <div className="text-center mb-2 relative">
-        <h1 className="logo-text text-6xl md:text-8xl font-black tracking-tighter mb-0">
-          <span className="text-blue-700 tracking-tighter">SERG</span><span className="radio-gradient-text">Radio</span>
+        <h1 className="logo-base text-6xl md:text-8xl font-black tracking-tighter mb-0">
+          <span className="text-blue-700 tracking-tighter serg-blue-text">SERG</span><span className="radio-gradient-text">Radio</span>
         </h1>
         <div className="text-right pr-2 md:pr-4 -mt-1">
           <span className="text-gray-500 font-bold text-xs md:text-sm tracking-wide uppercase">by </span>
