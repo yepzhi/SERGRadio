@@ -26,7 +26,7 @@ function App() {
   useEffect(() => {
     const fetchListeners = async () => {
       try {
-        const res = await fetch('https://yepzhi-hopradio-sync.hf.space/');
+        const res = await fetch('https://yepzhi-sergradio-sync.hf.space/');
         if (res.ok) {
           const data = await res.json();
           setListeners(data.listeners || 0);
@@ -45,9 +45,9 @@ function App() {
   useEffect(() => {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: "hopRadio Live",
+        title: "SERGRadio Live",
         artist: `${listeners} listeners`,
-        artwork: [{ src: 'https://yepzhi.com/hopRadio/logo.svg', sizes: '512x512', type: 'image/svg+xml' }]
+        artwork: [{ src: 'https://yepzhi.com/SERGRadio/logo.svg', sizes: '512x512', type: 'image/svg+xml' }]
       });
     }
   }, [listeners]);
@@ -167,9 +167,9 @@ function App() {
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 215, 0, ${alpha})`; // Gold stars
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`; // White stars (for blue theme)
         ctx.shadowBlur = reaction * 10;
-        ctx.shadowColor = '#ef4444'; // Red glow
+        ctx.shadowColor = '#3b82f6'; // Blue glow
         ctx.fill();
 
         // Draw connections for "Antigravity" web effect
@@ -183,7 +183,7 @@ function App() {
               ctx.beginPath();
               ctx.moveTo(p.x, p.y);
               ctx.lineTo(p2.x, p2.y);
-              ctx.strokeStyle = `rgba(239, 68, 68, ${0.1 + reaction * 0.2})`; // faint red lines
+              ctx.strokeStyle = `rgba(59, 130, 246, ${0.1 + reaction * 0.2})`; // faint blue lines
               ctx.lineWidth = 0.5;
               ctx.stroke();
             }
@@ -224,9 +224,9 @@ function App() {
       {/* Loading Screen - Waking Radio */}
       {!isReady && (
         <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50">
-          <h1 className="logo-text text-5xl font-black tracking-tighter mb-4 text-white">hopRadio</h1>
-          <div className="text-red-500 animate-pulse text-lg mb-4">Waking up the radio...</div>
-          <div className="w-16 h-16 border-4 border-red-500 border-t-transparent rounded-full animate-spin mb-8"></div>
+          <h1 className="logo-text text-5xl font-black tracking-tighter mb-4 text-white">SERGRadio</h1>
+          <div className="text-blue-500 animate-pulse text-lg mb-4">Waking up the radio...</div>
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-8"></div>
 
           {/* Failsafe Button - shows after 3s */}
           <button
@@ -241,7 +241,7 @@ function App() {
 
       {/* Network Warning */}
       {!isOnline && (
-        <div className="fixed top-0 left-0 w-full bg-red-900/90 text-white z-50 text-center py-2 text-sm font-bold flex items-center justify-center gap-2 backdrop-blur-md">
+        <div className="fixed top-0 left-0 w-full bg-blue-900/90 text-white z-50 text-center py-2 text-sm font-bold flex items-center justify-center gap-2 backdrop-blur-md">
           <WifiOff size={16} />
           <span>Connection Lost</span>
         </div>
@@ -249,7 +249,7 @@ function App() {
 
       {/* Logo Section */}
       <div className="text-center mb-2">
-        <h1 className="logo-text text-6xl md:text-8xl font-black tracking-tighter mb-2">hopRadio</h1>
+        <h1 className="logo-text text-6xl md:text-8xl font-black tracking-tighter mb-2">SERGRadio</h1>
         <div className="text-gray-400 font-light tracking-widest text-sm md:text-base max-w-lg mx-auto mb-6">
           We don't play what you want, we play what you need
         </div>
@@ -257,9 +257,9 @@ function App() {
 
       {/* Live Status & Listeners */}
       <div className="flex flex-col items-center mb-6 space-y-2 pointer-events-auto z-20 relative">
-        <div className="flex items-center space-x-2 bg-red-500/10 px-4 py-1.5 rounded-full border border-red-500/20 backdrop-blur-md">
-          <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
-          <span className="text-red-500 font-bold text-xs tracking-widest uppercase">LIVE AIR</span>
+        <div className="flex items-center space-x-2 bg-blue-500/10 px-4 py-1.5 rounded-full border border-blue-500/20 backdrop-blur-md">
+          <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+          <span className="text-blue-500 font-bold text-xs tracking-widest uppercase">LIVE AIR</span>
         </div>
 
         <div className="text-gray-400 text-xs font-medium flex items-center space-x-1">
@@ -276,19 +276,19 @@ function App() {
           <canvas ref={canvasRef} width={450} height={150} className="w-full h-full object-contain"></canvas>
         </div>
 
-        <div className={`absolute top-6 right-6 text-xs uppercase tracking-[2px] font-bold flex items-center gap-2 z-20 ${isLive ? 'text-red-500' : 'text-gray-500'}`}>
-          {isPlaying && isLive && <span className="w-2 h-2 rounded-full bg-red-600 live-dot-anim"></span>}
+        <div className={`absolute top-6 right-6 text-xs uppercase tracking-[2px] font-bold flex items-center gap-2 z-20 ${isLive ? 'text-blue-500' : 'text-gray-500'}`}>
+          {isPlaying && isLive && <span className="w-2 h-2 rounded-full bg-blue-600 live-dot-anim"></span>}
           {isPlaying ? (isBuffering ? 'BUFFERING...' : 'LIVE') : ''}
         </div>
 
         {/* Play Button */}
         <button
           onClick={togglePlay}
-          className={`play-btn-glow w-28 h-28 md:w-32 md:h-32 rounded-full flex items-center justify-center text-red-500 hover:text-gold-400 transition-colors cursor-pointer relative group mt-4 z-10 ${isBuffering ? 'animate-pulse' : ''}`}
+          className={`play-btn-glow w-28 h-28 md:w-32 md:h-32 rounded-full flex items-center justify-center text-blue-500 hover:text-white transition-colors cursor-pointer relative group mt-4 z-10 ${isBuffering ? 'animate-pulse' : ''}`}
         >
           {/* Spinner Ring if buffering */}
           {isBuffering && isPlaying ? (
-            <div className="absolute inset-0 border-4 border-red-500/30 border-t-red-500 rounded-full animate-spin"></div>
+            <div className="absolute inset-0 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
           ) : null}
           <div className="relative z-10">
             {isPlaying ? (
@@ -309,7 +309,7 @@ function App() {
 
           <div className={`transition-all duration-500 ${isPlaying ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'}`}>
             <h2 className="text-2xl font-bold text-white mb-1 drop-shadow-md">
-              {track ? track.title : 'hopRadio Live'}
+              {track ? track.title : 'SERGRadio Live'}
             </h2>
             <p className="text-gray-400 font-light text-lg">
               {track ? track.artist : 'HQ Audio Stream'}
@@ -328,12 +328,12 @@ function App() {
       <div className="absolute bottom-2 w-full flex flex-col md:flex-row justify-between items-end px-8 z-20 pointer-events-none gap-2 md:gap-0">
         <div className="pointer-events-auto">
           <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="text-gray-600 hover:text-gray-400 transition-colors text-xs font-medium block max-w-md text-left leading-tight">
-            Do you like this? 💙 <span className="text-red-700 hover:text-red-500 font-normal transition-colors">Invest in this project, make this a real radio station. click here to know more.</span>
+            Do you like this? 💙 <span className="text-blue-600 hover:text-blue-500 font-normal transition-colors">Invest in this project, make this a real radio station. click here to know more.</span>
           </a>
         </div>
         <div className="pointer-events-auto">
           <div className="text-gray-600 text-[10px] tracking-wide">
-            Created by <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="text-red-700 hover:text-red-500 transition-colors font-bold">@yepzhi</a> <span className="text-gray-500">v2.2.0</span>
+            Created by <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-500 transition-colors font-bold">@yepzhi</a> <span className="text-gray-500">v1.0.0</span>
           </div>
         </div>
       </div>
