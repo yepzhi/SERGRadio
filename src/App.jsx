@@ -327,6 +327,21 @@ function App() {
         <AdSpace />
       </div>
 
+      {/* Cross Link: hopRadio */}
+      <div className="w-full flex justify-center mb-6 pointer-events-auto z-30">
+        <a href="https://yepzhi.com/hopRadio/" className="group relative px-6 py-2 bg-black/60 border border-red-900/50 rounded-full flex items-center gap-3 hover:bg-black/80 transition-all hover:scale-105 hover:shadow-[0_0_20px_rgba(255,0,0,0.4)]">
+          <div className="w-8 h-8 rounded-full bg-red-900 border border-red-500 flex items-center justify-center relative overflow-hidden">
+            <div className="absolute inset-0 bg-red-500/30 animate-pulse"></div>
+            <span className="font-bold text-[10px] text-white z-10 w-full text-center leading-none">hop</span>
+          </div>
+          <div className="flex flex-col text-left">
+            <span className="text-[10px] text-gray-400 uppercase tracking-widest leading-none">Listen to</span>
+            <span className="text-sm font-bold text-white tracking-wide"><span className="text-[#fbbf24]">hop</span><span className="text-red-500">Radio</span></span>
+          </div>
+          <svg className="w-4 h-4 text-gray-500 group-hover:text-white transition-colors ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </a>
+      </div>
+
       {/* Footer */}
       <div className="absolute bottom-2 w-full flex flex-col items-center justify-center px-8 z-20 pointer-events-none gap-1">
         <div className="pointer-events-auto text-gray-500 text-[10px] tracking-wide text-center">
