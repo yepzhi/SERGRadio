@@ -24,7 +24,7 @@ app.add_middleware(
 )
 
 # Configuration
-BASE_URL = "https://yepzhi.com/SERGRadio/tracks/" # Storage for Long Mixes
+BASE_URL = "https://huggingface.co/spaces/yepzhi/sergradio-sync/resolve/main/tracks/" # Fetch from Space storage
 TRACKS_DIR = "tracks"
 os.makedirs(TRACKS_DIR, exist_ok=True)
 
