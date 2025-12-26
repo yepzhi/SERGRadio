@@ -19,10 +19,18 @@ jobs:
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
-          cd hf-sync-backend
-          git init
+          # 1. Clone the Space
+          git clone https://yepzhi:$HF_TOKEN@huggingface.co/spaces/yepzhi/sergradio-sync space_repo
+          
+          # 2. Copy backend files content (app.py, etc) into the cloned space
+          # We use rsync or cp. Important: hf-sync-backend/* to space_repo/
+          cp -r hf-sync-backend/* space_repo/
+          
+          # 3. Commit and Push (Preserving existing files like tracks/)
+          cd space_repo
           git config user.email "bot@yepzhi.com"
           git config user.name "Deployment Bot"
           git add .
-          git commit -m "Deploy to HF Space"
-          git push -f https://yepzhi:$HF_TOKEN@huggingface.co/spaces/yepzhi/sergradio-sync master:main
+          # Allow empty commits just in case, or ignore failure if no changes
+          git commit -m "Sync code from GitHub" || echo "No changes to commit"
+          git push origin main
