@@ -2,7 +2,7 @@ import { Howl, Howler } from 'howler';
 
 export const radio = new class RadioEngine {
     constructor() {
-        this.streamUrl = 'https://yepzhi-hopradio-sync.hf.space/stream';
+        this.streamUrl = 'https://yepzhi-sergradio-sync.hf.space/stream';
         this.howl = null;
         this.isPlaying = false;
         this.volume = 0.6;
@@ -28,7 +28,7 @@ export const radio = new class RadioEngine {
         if (this.onTrackChange) {
             this.onTrackChange({
                 title: "Live Radio",
-                artist: "hopRadio",
+                artist: "SERGRadio",
                 src: this.streamUrl,
                 type: "stream",
                 id: "stream"
@@ -180,8 +180,8 @@ export const radio = new class RadioEngine {
         if ('mediaSession' in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
                 title: "Live Stream",
-                artist: "hopRadio",
-                artwork: [{ src: 'https://yepzhi.com/hopRadio/logo.svg', sizes: '512x512', type: 'image/svg+xml' }]
+                artist: "SERGRadio",
+                artwork: [{ src: 'https://yepzhi.com/SERGRadio/logo.svg', sizes: '512x512', type: 'image/svg+xml' }]
             });
             navigator.mediaSession.playbackState = 'playing';
             navigator.mediaSession.setActionHandler('play', () => this.play());
