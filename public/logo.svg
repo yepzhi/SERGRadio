@@ -1,29 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <!-- Dark Electric Blue Gradient -->
-    <linearGradient id="electricBlue" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
-      <stop offset="40%" style="stop-color:#2563eb;stop-opacity:1" />
-      <stop offset="70%" style="stop-color:#3b82f6;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#60a5fa;stop-opacity:1" />
+    <!-- Royal Blue to Red Gradient -->
+    <linearGradient id="royalBlueRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4169e1;stop-opacity:1" /> <!-- Royal Blue -->
+      <stop offset="60%" style="stop-color:#1e3a8a;stop-opacity:1" /> <!-- Dark Blue -->
+      <stop offset="100%" style="stop-color:#ef4444;stop-opacity:1" /> <!-- HopRadio Red -->
     </linearGradient>
     
-    <!-- Intense Glow Filter -->
-    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%">
-      <feGaussianBlur stdDeviation="8" result="blur1"/>
-      <feGaussianBlur stdDeviation="16" result="blur2"/>
+    <!-- Heavy Dark Glow Filter -->
+    <filter id="darkGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="15" result="coloredBlur"/>
+      <feFlood flood-color="#000000" flood-opacity="0.8" result="glowColor"/>
+      <feComposite in="glowColor" in2="coloredBlur" operator="in" result="coloredBlur"/>
       <feMerge>
-        <feMergeNode in="blur2"/>
-        <feMergeNode in="blur1"/>
+        <feMergeNode in="coloredBlur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
     
-    <!-- Outer Glow -->
-    <filter id="outerGlow" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="20" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
+    <!-- Neon Glow for Core -->
+    <filter id="neonGlow" x="-50%" y="-50%" width="200%" height="200%">
+       <feGaussianBlur stdDeviation="8" result="blur"/>
+       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
@@ -33,16 +31,16 @@
   <!-- Background -->
   <rect width="512" height="512" rx="90" fill="#050510" />
   
-  <!-- Outer Glowing Ring (Subtle) -->
-  <circle cx="256" cy="256" r="160" stroke="url(#electricBlue)" stroke-width="6" fill="none" opacity="0.5" filter="url(#outerGlow)" />
+  <!-- Outer Ring (Dark Glow) -->
+  <circle cx="256" cy="256" r="160" stroke="url(#royalBlueRed)" stroke-width="8" fill="none" opacity="0.6" filter="url(#darkGlow)" />
   
   <!-- Main Ring -->
-  <circle cx="256" cy="256" r="140" stroke="url(#electricBlue)" stroke-width="12" fill="none" filter="url(#glow)" />
+  <circle cx="256" cy="256" r="140" stroke="url(#royalBlueRed)" stroke-width="14" fill="none" filter="url(#neonGlow)" />
   
-  <!-- Audio Waveform / Pulse (Smaller, more compact) -->
+  <!-- Audio Waveform / Pulse -->
   <path d="M130 256 L155 256 L180 200 L210 310 L245 170 L280 320 L315 190 L350 280 L375 256 L400 256" 
-        stroke="url(#electricBlue)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#glow)" />
+        stroke="url(#royalBlueRed)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" fill="none" filter="url(#neonGlow)" />
   
-  <!-- Center Dot (Electric Core) -->
-  <circle cx="256" cy="256" r="8" fill="#60a5fa" filter="url(#glow)" opacity="0.8" />
+  <!-- Center Dot (Red Core) -->
+  <circle cx="256" cy="256" r="6" fill="#ef4444" filter="url(#neonGlow)" opacity="0.9" />
 </svg>
