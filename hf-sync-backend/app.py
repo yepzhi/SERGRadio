@@ -28,13 +28,18 @@ BASE_URL = "https://yepzhi.com/SERGRadio/tracks/" # Storage for Long Mixes
 TRACKS_DIR = "tracks"
 os.makedirs(TRACKS_DIR, exist_ok=True)
 
-# Playlist: Long Mixes (User will upload these filenames)
-# Since mixes are 3h+, we prefer longer timeouts and stable names.
-# Shuffle Bag ensures even play.
+# Playlist: Long Mixes (Hosted on GitHub Pages / yepzhi.com)
 PLAYLIST = [
-    {"id": "m1", "title": "SERGRadio Session 1", "artist": "Mix", "file": "Mix1.mp3", "weight": 1},
-    {"id": "m2", "title": "SERGRadio Session 2", "artist": "Mix", "file": "Mix2.mp3", "weight": 1},
-    {"id": "m3", "title": "SERGRadio Session 3", "artist": "Mix", "file": "Mix3.mp3", "weight": 1},
+    {"id": "m1", "title": "Doble B Sat 9 Feb Rec 1", "artist": "Serg", "file": "DOBLE B SAT 9 FEB Rec 1.mp3", "weight": 1},
+    {"id": "m2", "title": "Doble B Sat 9 Feb Rec 2", "artist": "Serg", "file": "DOBLE B SAT 9 FEB Rec 2.mp3", "weight": 1},
+    {"id": "m3", "title": "Friday I'm In Love Vol. 4", "artist": "Serg", "file": "Friday  Im In Love Vol. 4.mp3", "weight": 1},
+    {"id": "m4", "title": "Goodbye 2015 Hello 2016", "artist": "Serg", "file": "Godbye 2015 Hello 2016.mp3", "weight": 1},
+    {"id": "m5", "title": "Goodbye 2014 Hello 2015", "artist": "Serg", "file": "GOODBYE 2014 HELLO 2015.mp3", "weight": 1},
+    {"id": "m6", "title": "Maxima Weekend Trip", "artist": "Serg", "file": "Maxima Weekend Trip.mp3", "weight": 1},
+    {"id": "m7", "title": "Republica De San Pedro", "artist": "Serg", "file": "SERG @ REPUBLICA DE SAN PEDRO.mp3", "weight": 1},
+    {"id": "m8", "title": "Backroom Hermosillo", "artist": "Serg", "file": "Serg@Backroom Hermosillo SON DANCE.mp3", "weight": 1},
+    {"id": "m9", "title": "The Missing Out Basement", "artist": "Serg", "file": "The Missing Out Basement Invites Serg.mp3", "weight": 1},
+    {"id": "m10", "title": "Up In The Club", "artist": "Serg", "file": "UP IN THE CLUB WITH MY HOMIES.mp3", "weight": 1},
 ]
 
 CLIENTS = []
