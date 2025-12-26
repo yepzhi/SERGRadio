@@ -321,6 +321,11 @@ function App() {
       </div>
 
 
+      {/* AdSpace */}
+      <div className="w-full flex justify-center mb-4 md:mb-6 lg:mb-8">
+        <AdSpace />
+      </div>
+
       {/* Footer */}
       <div className="absolute bottom-2 w-full flex flex-col items-center justify-center px-8 z-20 pointer-events-none gap-1">
         <div className="pointer-events-auto text-gray-500 text-[10px] tracking-wide text-center">
