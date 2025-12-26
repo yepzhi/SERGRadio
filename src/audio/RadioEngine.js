@@ -42,6 +42,9 @@ export const radio = new class RadioEngine {
         console.log("RadioEngine: Starting Stream...");
         if (this.onLoadStart) this.onLoadStart();
 
+        // CRITICAL: Unlock AudioContext BEFORE creating Howl (Chrome/Firefox fix)
+        this._unlockAudioContext();
+
         // 1. Unload previous instance to ensure fresh live edge
         if (this.howl) {
             this.howl.unload();
@@ -66,6 +69,14 @@ export const radio = new class RadioEngine {
                 // Simple retry
                 setTimeout(() => this.play(), 2000);
             },
+            onplayerror: (id, err) => {
+                console.warn("RadioEngine: Play blocked by browser, retrying...", err);
+                // Force unlock and retry
+                this._unlockAudioContext();
+                setTimeout(() => {
+                    if (this.howl) this.howl.play();
+                }, 100);
+            },
             onend: () => {
                 console.log("RadioEngine: Stream ended (connection lost?)");
                 this.isPlaying = false;
@@ -74,6 +85,26 @@ export const radio = new class RadioEngine {
             }
         });
     }
+
+    _unlockAudioContext() {
+        // Force resume Howler's AudioContext
+        if (Howler.ctx) {
+            if (Howler.ctx.state === 'suspended') {
+                console.log("RadioEngine: Resuming suspended AudioContext...");
+                Howler.ctx.resume().then(() => {
+                    console.log("RadioEngine: AudioContext resumed!");
+                }).catch(e => {
+                    console.warn("RadioEngine: AudioContext resume failed:", e);
+                });
+            }
+        }
+
+        // Howler internal unlock (belt and suspenders)
+        if (typeof Howler._autoResume === 'function') {
+            Howler._autoResume();
+        }
+    }
+
 
     pause() {
         console.log("RadioEngine: Stopping Stream");
