@@ -50,31 +50,29 @@ body::before {
   }
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Righteous&family=Yellowtail&display=swap');
-
 /* Logo Style from Reference */
 .logo-text {
-  font-family: 'Yellowtail', cursive;
-  /* Modern Cursive */
-  /* No gradient here, applied via spans in JSX */
-  text-shadow: 0 0 80px rgba(0, 0, 0, 0.9);
-  /* Deep Black Glow */
-  filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.8));
-  /* Intense Black Shadow */
-  letter-spacing: 2px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Neon Fog: Blue Glow with White Core */
+  text-shadow:
+    0 0 10px rgba(0, 0, 255, 0.8),
+    0 0 20px rgba(0, 0, 255, 0.6),
+    0 0 40px rgba(0, 0, 255, 0.4),
+    0 0 80px rgba(0, 0, 255, 0.2);
+  filter: drop-shadow(0 0 15px rgba(0, 0, 255, 0.5));
+  letter-spacing: -2px;
 }
 
 .radio-gradient-text {
-  font-family: 'Righteous', sans-serif;
-  /* Keep RADIO modern/tech or cursive too? Let's use Righteous for contrast or Yellowtail for match. User said "otra tipografia moderna cursiva". Let's apply cursive to WHOLE title. */
-  font-family: 'Yellowtail', cursive;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  /* Blood Red Gradient */
   background: linear-gradient(135deg, #ff4444 0%, #cc0000 60%, #8b0000 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.9));
-  /* Black Glow on Radio too */
-  padding-left: 10px;
+  /* Neon Fog: Red Glow reflecting in mist */
+  filter: drop-shadow(0 0 10px rgba(255, 0, 0, 0.6)) drop-shadow(0 0 30px rgba(255, 0, 0, 0.4)) drop-shadow(0 0 60px rgba(139, 0, 0, 0.2));
+  padding-left: 0px;
 }
 
 /* Glass Card from Reference */
