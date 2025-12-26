@@ -248,12 +248,13 @@ function App() {
       )}
 
       {/* Logo Section */}
-      <div className="text-center mb-2">
-        <h1 className="logo-text text-6xl md:text-8xl font-black tracking-tighter mb-2">
+      <div className="text-center mb-2 relative">
+        <h1 className="logo-text text-6xl md:text-8xl font-black tracking-tighter mb-0">
           <span className="text-blue-600">SERG</span><span className="text-red-600">Radio</span>
         </h1>
-        <div className="text-gray-200 font-light tracking-widest text-sm md:text-base max-w-lg mx-auto mb-6">
-          World class DJ, by <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="text-white font-bold hover:text-blue-400 underline decoration-blue-500/30 hover:decoration-blue-500 transition-all">@SERG</a>
+        <div className="text-right pr-2 md:pr-4 -mt-1">
+          <span className="text-gray-400 font-light text-xs md:text-sm tracking-wide">by </span>
+          <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="text-white font-bold text-xs md:text-sm hover:text-blue-400 transition-all">@SERG</a>
         </div>
       </div>
 
