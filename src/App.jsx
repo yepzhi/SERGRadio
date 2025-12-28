@@ -253,7 +253,7 @@ function App() {
       )}
 
       {/* Logo Section */}
-      <div className="text-center mb-2 relative">
+      <div className="text-center mb-6 relative">
         <h1 className="logo-base text-6xl md:text-8xl font-black tracking-tighter mb-0">
           <span className="text-blue-700 tracking-tighter serg-blue-text">SERG</span><span className="radio-gradient-text">Radio</span>
         </h1>
