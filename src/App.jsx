@@ -343,23 +343,21 @@ function App() {
         </a>
       </div>
 
-      {/* Footer */}
-      <div className="absolute bottom-2 w-full flex flex-col items-center justify-center px-8 z-20 pointer-events-none gap-1">
-        <div className="pointer-events-auto text-gray-500 text-[10px] tracking-wide flex flex-col md:flex-row items-center justify-center gap-2 md:gap-3">
-          <div className="flex items-center gap-1">
-            Mixes by
-            <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm">
-              @SERG
-            </a>
-          </div>
-          <div className="hidden md:block text-gray-700">•</div>
-          <div className="flex items-center gap-1">
-            Site created by
-            <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm">
-              @yepzhi
-            </a>
-            <span className="text-gray-600 ml-1">v2.2.4</span>
-          </div>
+      {/* Footer (Right Aligned, Stacked Version) */}
+      <div className="absolute bottom-4 right-6 z-20 pointer-events-none flex flex-col items-end gap-1">
+        <div className="pointer-events-auto flex items-center gap-2">
+          <span className="text-gray-500 text-[10px] tracking-wide font-medium mr-1">Mixes by</span>
+          <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm text-[10px]">
+            @SERG
+          </a>
+          <span className="text-gray-700 mx-1">•</span>
+          <span className="text-gray-500 text-[10px] tracking-wide font-medium mr-1">Site by</span>
+          <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm text-[10px]">
+            @yepzhi
+          </a>
+        </div>
+        <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
+          v2.2.5
         </div>
       </div>
 
