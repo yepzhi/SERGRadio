@@ -314,7 +314,7 @@ function App() {
               SERGRadio
             </h2>
             <p className="text-gray-400 font-light text-lg mb-3">
-              Streaming Live
+              Streaming Live 24/7
             </p>
           </div>
         </div>
@@ -341,6 +341,17 @@ function App() {
           <span className="text-xl font-black tracking-tight"><span className="text-[#fbbf24] drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">hop</span><span className="text-red-500 drop-shadow-[0_0_8px_rgba(255,0,0,0.8)]">Radio</span></span>
           <svg className="w-5 h-5 text-gray-400 group-hover:text-white transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
         </a>
+      </div>
+
+      {/* Offline Download Button */}
+      <div className="w-full flex justify-center mb-8 pointer-events-auto z-30">
+        <button
+          onClick={() => window.location.href = 'https://yepzhi-sergradio-sync.hf.space/api/download-slice'}
+          className="px-5 py-2 rounded-full bg-blue-900/20 border border-blue-500/30 text-blue-400 text-xs font-bold uppercase tracking-widest hover:bg-blue-900/40 hover:text-white transition-all flex items-center gap-2"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+          Download 1h Offline (60MB)
+        </button>
       </div>
 
       {/* Footer (Right Aligned, Stacked Version) */}
