@@ -265,11 +265,6 @@ function App() {
 
       {/* Live Status & Listeners */}
       <div className="flex flex-col items-center mb-6 space-y-2 pointer-events-auto z-20 relative">
-        <div className="flex items-center space-x-2 bg-black/40 px-4 py-1.5 rounded-full border border-blue-900/50 backdrop-blur-md shadow-lg shadow-blue-900/20">
-          <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></div>
-          <span className="text-gray-200 font-black text-xs tracking-[0.2em] uppercase">LIVE AIR</span>
-        </div>
-
         <div className="text-gray-400 text-xs font-medium flex items-center space-x-1">
           <User size={12} />
           <span>{listeners} Listening</span>
@@ -317,10 +312,10 @@ function App() {
 
           <div className={`transition-all duration-500 ${isPlaying ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'}`}>
             <h2 className="text-2xl font-bold text-white mb-1 drop-shadow-md">
-              {track ? track.title : 'SERGRadio Live'}
+              SERGRadio Live
             </h2>
             <p className="text-gray-400 font-light text-lg">
-              {track ? track.artist : 'HQ Audio Stream'}
+              HQ Audio Stream
             </p>
           </div>
         </div>
@@ -344,7 +339,7 @@ function App() {
       {/* Footer */}
       <div className="absolute bottom-2 w-full flex flex-col items-center justify-center px-8 z-20 pointer-events-none gap-1">
         <div className="pointer-events-auto text-gray-500 text-[10px] tracking-wide text-center">
-          Mixes by <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="text-blue-500 hover:text-blue-300 font-bold transition-colors">@SERG</a>, Site created by <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="text-blue-500 hover:text-blue-300 font-bold transition-colors">@yepzhi</a> <span className="text-gray-600">v2.2.1</span>
+          Mixes by <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="text-blue-500 hover:text-blue-300 font-bold transition-colors">@SERG 👆</a>, Site created by <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="text-blue-500 hover:text-blue-300 font-bold transition-colors">@yepzhi</a> <span className="text-gray-600">v2.2.3</span>
         </div>
       </div>
 
