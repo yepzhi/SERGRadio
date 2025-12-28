@@ -258,48 +258,7 @@ def index():
         "queue": READY_TRACKS.qsize()
     }
 
-@app.get("/api/download-slice")
-def download_slice():
-    """Streams a 60-minute slice of a random mix on the fly using FFmpeg"""
-    # 1. Pick a random mix
-    mix = random.choice(PLAYLIST)
-    url = f"{BASE_URL}{mix['file']}"
-    
-    print(f"OFFLINE REQUEST: Slicing 60m from {mix['title']}...")
 
-    # 2. Generator for Streaming Response
-    def iterfile():
-        # FFmpeg command: Read from URL, slice 60 mins (-t 3600), output MP3 to pipe
-        cmd = [
-            'ffmpeg',
-            '-i', url,
-            '-t', '3600',       # 1 Hour Duration
-            '-f', 'mp3',
-            '-b:a', '128k',     # 128kbps = ~57MB for 1 hour (Perfect for offline)
-            '-map', 'a',        # Map audio only
-            '-loglevel', 'error',
-            'pipe:1'            # Output to stdout
-        ]
-        
-        # Start process
-        process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-        
-        try:
-            while True:
-                chunk = process.stdout.read(32768) # 32KB chunks
-                if not chunk:
-                    break
-                yield chunk
-        finally:
-            process.terminate()
-
-    # 3. Return Stream
-    filename = f"SERGRadio_Offline_{int(time.time())}.mp3"
-    headers = {
-        "Content-Disposition": f'attachment; filename="{filename}"',
-        "Content-Type": "audio/mpeg"
-    }
-    return StreamingResponse(iterfile(), media_type="audio/mpeg", headers=headers)
 
 @app.get("/stream")
 def stream_audio():
