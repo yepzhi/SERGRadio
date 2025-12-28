@@ -263,16 +263,10 @@ function App() {
         </div>
       </div>
 
-      {/* Live Status & Listeners */}
-      <div className="flex flex-col items-center mb-6 space-y-2 pointer-events-auto z-20 relative">
-        <div className="text-gray-400 text-xs font-medium flex items-center space-x-1">
-          <User size={12} />
-          <span>{listeners} Listening</span>
-        </div>
-      </div>
+      {/* Live Status & Listeners - REMOVED (Moved below) */}
 
       {/* Player Card (Glass) */}
-      <div className="glass-panel rounded-[30px] p-6 md:p-8 lg:p-10 w-full md:w-auto min-w-[300px] md:min-w-[450px] flex flex-col items-center gap-4 md:gap-5 mb-3 md:mb-4 lg:mb-6 transition-all duration-500 relative overflow-hidden">
+      <div className="glass-panel rounded-[30px] p-6 md:p-8 lg:p-10 w-full md:w-auto min-w-[300px] md:min-w-[450px] flex flex-col items-center gap-4 md:gap-5 mb-1 transition-all duration-500 relative overflow-hidden">
 
         {/* Real-Time Visualizer (Canvas Background) */}
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-60 z-0 h-32">
@@ -312,12 +306,22 @@ function App() {
 
           <div className={`transition-all duration-500 ${isPlaying ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'}`}>
             <h2 className="text-2xl font-bold text-white mb-1 drop-shadow-md">
-              SERGRadio Live
+              SERGRadio
             </h2>
-            <p className="text-gray-400 font-light text-lg">
-              HQ Audio Stream
+            <p className="text-gray-400 font-light text-lg mb-3">
+              Streaming Live
             </p>
+            {/* HD Radio Logo */}
+            <img src="/SERGRadio/hd-logo.png" alt="HD Radio" className="h-8 mx-auto opacity-80" />
           </div>
+        </div>
+      </div>
+
+      {/* Listeners Info (Bottom Right of Player) */}
+      <div className="w-full md:w-auto min-w-[300px] md:min-w-[450px] flex justify-end px-4 mb-3 md:mb-4 lg:mb-6">
+        <div className="text-gray-500 text-[10px] uppercase tracking-wider font-bold flex items-center space-x-1">
+          <User size={10} />
+          <span>{listeners} Listening</span>
         </div>
       </div>
 
@@ -338,8 +342,16 @@ function App() {
 
       {/* Footer */}
       <div className="absolute bottom-2 w-full flex flex-col items-center justify-center px-8 z-20 pointer-events-none gap-1">
-        <div className="pointer-events-auto text-gray-500 text-[10px] tracking-wide text-center">
-          Mixes by <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="text-blue-500 hover:text-blue-300 font-bold transition-colors">@SERG 👆</a>, Site created by <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="text-blue-500 hover:text-blue-300 font-bold transition-colors">@yepzhi</a> <span className="text-gray-600">v2.2.3</span>
+        <div className="pointer-events-auto text-gray-500 text-[10px] tracking-wide flex items-center justify-center gap-2">
+          Mixes by
+          <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm">
+            @SERG
+          </a>,
+          Site created by
+          <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm">
+            @yepzhi
+          </a>
+          <span className="text-gray-600">v2.2.3</span>
         </div>
       </div>
 
