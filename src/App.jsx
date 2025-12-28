@@ -273,9 +273,14 @@ function App() {
           <canvas ref={canvasRef} width={450} height={150} className="w-full h-full object-contain"></canvas>
         </div>
 
-        <div className={`absolute top-6 right-6 text-xs uppercase tracking-[2px] font-bold flex items-center gap-2 z-20 ${isLive ? 'text-blue-500' : 'text-gray-500'}`}>
-          {isPlaying && isLive && <span className="w-2 h-2 rounded-full bg-blue-600 live-dot-anim"></span>}
-          {isPlaying ? (isBuffering ? 'BUFFERING...' : 'LIVE') : ''}
+        {/* Top Right Status & Logo */}
+        <div className="absolute top-6 right-6 z-20 flex flex-col items-end gap-1">
+          <div className={`text-xs uppercase tracking-[2px] font-bold flex items-center gap-2 ${isLive ? 'text-blue-500' : 'text-gray-500'}`}>
+            {isPlaying && isLive && <span className="w-2 h-2 rounded-full bg-blue-600 live-dot-anim"></span>}
+            {isPlaying ? (isBuffering ? 'BUFFERING...' : 'LIVE') : ''}
+          </div>
+          {/* HD Radio Logo - Top Right */}
+          <img src="/SERGRadio/hd-logo.png" alt="HD Radio" className="h-5 opacity-90 mt-1" />
         </div>
 
         {/* Play Button */}
@@ -311,8 +316,6 @@ function App() {
             <p className="text-gray-400 font-light text-lg mb-3">
               Streaming Live
             </p>
-            {/* HD Radio Logo */}
-            <img src="/SERGRadio/hd-logo.png" alt="HD Radio" className="h-8 mx-auto opacity-80" />
           </div>
         </div>
       </div>
