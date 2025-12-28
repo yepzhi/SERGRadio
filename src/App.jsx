@@ -333,7 +333,7 @@ function App() {
 
       {/* Cross Link: hopRadio */}
       <div className="w-full flex justify-center mb-4 pointer-events-auto z-30">
-        <a href="https://yepzhi.com/hopRadio/" className="group relative px-6 py-2.5 bg-black/60 border border-red-900/50 rounded-full flex items-center gap-3 hover:bg-black/90 transition-all hover:scale-105 hover:shadow-[0_0_25px_rgba(255,0,0,0.3)]">
+        <a href="https://yepzhi.com/hopRadio/" className="group relative px-6 py-2.5 bg-black/40 backdrop-blur-xl border border-red-900/50 rounded-full flex items-center gap-3 hover:bg-black/80 transition-all hover:scale-105 hover:shadow-[0_0_25px_rgba(255,0,0,0.3)]">
           <span className="text-xs text-gray-400 uppercase tracking-widest font-semibold group-hover:text-gray-300">Listen</span>
           <span className="text-xl font-black tracking-tight"><span className="text-[#fbbf24] drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">hop</span><span className="text-red-500 drop-shadow-[0_0_8px_rgba(255,0,0,0.8)]">Radio</span></span>
           <svg className="w-5 h-5 text-gray-400 group-hover:text-white transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
