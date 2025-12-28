@@ -310,13 +310,11 @@ function App() {
           )}
 
           <div className={`transition-all duration-500 ${isPlaying ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'}`}>
-            <h2 className="text-2xl font-bold text-white mb-1 drop-shadow-md">
-              SERGRadio
-            </h2>
-            <p className="text-gray-400 font-light text-lg mb-3">
+            <p className="text-gray-400 font-light text-lg mb-3 pt-2">
               Streaming Live 24/7
             </p>
           </div>
+
         </div>
       </div>
 
@@ -368,9 +366,10 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.2.5
+          v2.2.6
         </div>
       </div>
+
 
     </div>
   );
