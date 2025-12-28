@@ -318,7 +318,7 @@ function App() {
       </div>
 
       {/* Listeners Info (Bottom Right of Player) */}
-      <div className="w-full md:w-auto min-w-[300px] md:min-w-[450px] flex justify-end px-4 mb-3 md:mb-4 lg:mb-6">
+      <div className="w-full md:w-auto min-w-[300px] md:min-w-[450px] flex justify-end px-4 mb-2 md:mb-3">
         <div className="text-gray-500 text-[10px] uppercase tracking-wider font-bold flex items-center space-x-1">
           <User size={10} />
           <span>{listeners} Listening</span>
@@ -327,13 +327,13 @@ function App() {
 
 
       {/* AdSpace */}
-      <div className="w-full flex justify-center mb-4 md:mb-6 lg:mb-8">
+      <div className="w-full flex justify-center mb-2 md:mb-4">
         <AdSpace />
       </div>
 
       {/* Cross Link: hopRadio */}
-      <div className="w-full flex justify-center mb-6 pointer-events-auto z-30">
-        <a href="https://yepzhi.com/hopRadio/" className="group relative px-8 py-3 bg-black/60 border border-red-900/50 rounded-full flex items-center gap-3 hover:bg-black/90 transition-all hover:scale-105 hover:shadow-[0_0_25px_rgba(255,0,0,0.3)]">
+      <div className="w-full flex justify-center mb-4 pointer-events-auto z-30">
+        <a href="https://yepzhi.com/hopRadio/" className="group relative px-6 py-2.5 bg-black/60 border border-red-900/50 rounded-full flex items-center gap-3 hover:bg-black/90 transition-all hover:scale-105 hover:shadow-[0_0_25px_rgba(255,0,0,0.3)]">
           <span className="text-xs text-gray-400 uppercase tracking-widest font-semibold group-hover:text-gray-300">Listen</span>
           <span className="text-xl font-black tracking-tight"><span className="text-[#fbbf24] drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">hop</span><span className="text-red-500 drop-shadow-[0_0_8px_rgba(255,0,0,0.8)]">Radio</span></span>
           <svg className="w-5 h-5 text-gray-400 group-hover:text-white transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
@@ -342,16 +342,21 @@ function App() {
 
       {/* Footer */}
       <div className="absolute bottom-2 w-full flex flex-col items-center justify-center px-8 z-20 pointer-events-none gap-1">
-        <div className="pointer-events-auto text-gray-500 text-[10px] tracking-wide flex items-center justify-center gap-2">
-          Mixes by
-          <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm">
-            @SERG
-          </a>,
-          Site created by
-          <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm">
-            @yepzhi
-          </a>
-          <span className="text-gray-600">v2.2.3</span>
+        <div className="pointer-events-auto text-gray-500 text-[10px] tracking-wide flex flex-col md:flex-row items-center justify-center gap-2 md:gap-3">
+          <div className="flex items-center gap-1">
+            Mixes by
+            <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm">
+              @SERG
+            </a>
+          </div>
+          <div className="hidden md:block text-gray-700">•</div>
+          <div className="flex items-center gap-1">
+            Site created by
+            <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm">
+              @yepzhi
+            </a>
+            <span className="text-gray-600 ml-1">v2.2.4</span>
+          </div>
         </div>
       </div>
 
