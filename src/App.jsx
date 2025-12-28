@@ -30,6 +30,10 @@ function App() {
         if (res.ok) {
           const data = await res.json();
           setListeners(data.listeners || 0);
+          // Auto-update track info from server (Metadata Sync)
+          if (data.now_playing) {
+            setTrack(data.now_playing);
+          }
         }
       } catch (e) {
         // Silent fail
@@ -37,7 +41,7 @@ function App() {
     };
 
     fetchListeners();
-    const interval = setInterval(fetchListeners, 10000); // Poll every 10s
+    const interval = setInterval(fetchListeners, 5000); // Poll every 5s for faster metadata updates
     return () => clearInterval(interval);
   }, []);
 
@@ -45,12 +49,12 @@ function App() {
   useEffect(() => {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: "SERGRadio Live",
-        artist: `${listeners} listeners`,
+        title: track ? track.title : "SERGRadio Live",
+        artist: track ? track.artist : `${listeners} listeners`,
         artwork: [{ src: 'https://yepzhi.com/SERGRadio/logo.svg', sizes: '512x512', type: 'image/svg+xml' }]
       });
     }
-  }, [listeners]);
+  }, [listeners, track]);
 
 
   useEffect(() => {
@@ -81,9 +85,10 @@ function App() {
     };
     initRadio();
 
-    radio.onTrackChange = (newTrack) => {
-      setTrack(newTrack);
-    };
+    // Local override removed to rely on server poll
+    // radio.onTrackChange = (newTrack) => {
+    //   setTrack(newTrack);
+    // };
 
     // Buffering Events
     radio.onLoadStart = () => {
@@ -339,7 +344,7 @@ function App() {
       {/* Footer */}
       <div className="absolute bottom-2 w-full flex flex-col items-center justify-center px-8 z-20 pointer-events-none gap-1">
         <div className="pointer-events-auto text-gray-500 text-[10px] tracking-wide text-center">
-          Mixes by <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="text-blue-500 hover:text-blue-300 font-bold transition-colors">@SERG</a>, Site created by <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="text-blue-500 hover:text-blue-300 font-bold transition-colors">@yepzhi</a> <span className="text-gray-600">v2.2.0</span>
+          Mixes by <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="text-blue-500 hover:text-blue-300 font-bold transition-colors">@SERG</a>, Site created by <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="text-blue-500 hover:text-blue-300 font-bold transition-colors">@yepzhi</a> <span className="text-gray-600">v2.2.1</span>
         </div>
       </div>
 

@@ -56,7 +56,7 @@ export const radio = new class RadioEngine {
             format: ['mp3'],
             html5: true, // Required for long streams & iOS background audio
             volume: this.volume,
-            autoplay: true,
+            autoplay: false, // We handle play manually to inject CORS
             onplay: () => {
                 console.log("RadioEngine: Stream Playing!");
                 this.isPlaying = true;
@@ -84,6 +84,14 @@ export const radio = new class RadioEngine {
                 setTimeout(() => this.play(), 1000);
             }
         });
+
+        // 3. Inject CORS *before* request starts (Critical for Chrome/Firefox Visualizer)
+        if (this.howl._sounds.length > 0 && this.howl._sounds[0]._node) {
+            this.howl._sounds[0]._node.crossOrigin = "anonymous";
+        }
+
+        // 4. Start
+        this.howl.play();
     }
 
     _unlockAudioContext() {
