@@ -273,13 +273,6 @@ function App() {
           <canvas ref={canvasRef} width={450} height={150} className="w-full h-full object-contain"></canvas>
         </div>
 
-        {/* Top Left - HQ Badge */}
-        <div className="absolute top-6 left-6 z-20">
-          <span className="text-blue-500 text-xs uppercase tracking-[2px] font-bold">
-            HQ Audio ~320 kbps
-          </span>
-        </div>
-
         {/* Top Right Status & Logo */}
         <div className="absolute top-6 right-6 z-20 flex flex-col items-end gap-1">
           <div className={`text-xs uppercase tracking-[2px] font-bold flex items-center gap-2 ${isLive ? 'text-blue-500' : 'text-gray-500'}`}>
