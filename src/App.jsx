@@ -101,6 +101,11 @@ function App() {
       setIsLive(true);
     };
 
+    // Watchdog Buffering Hook
+    radio.onBufferingChange = (state) => {
+      setIsBuffering(state);
+    };
+
     // Initialize Particles Logic
     const initParticles = (width, height) => {
       const count = 60;
@@ -366,7 +371,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.2.5
+          v2.2.6
         </div>
 
       </div>
