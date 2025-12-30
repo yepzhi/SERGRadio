@@ -275,8 +275,8 @@ function App() {
 
         {/* Top Left - HQ Badge */}
         <div className="absolute top-6 left-6 z-20">
-          <span className="text-blue-500 text-[9px] tracking-widest font-bold uppercase opacity-80">
-            Ultra HQ Audio @320 kbps
+          <span className="text-blue-500 text-xs uppercase tracking-[2px] font-bold">
+            HQ Audio ~320 kbps
           </span>
         </div>
 
