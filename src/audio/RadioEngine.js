@@ -177,13 +177,13 @@ export const radio = new class RadioEngine {
                         const lowShelf = ctx.createBiquadFilter();
                         lowShelf.type = 'lowshelf';
                         lowShelf.frequency.value = 95;
-                        lowShelf.gain.value = 8.0;  // +8 dB bass
+                        lowShelf.gain.value = 7.0;  // +7 dB bass
 
                         // 3. Bass Peak (sub-kick weight)
                         const bassPeak = ctx.createBiquadFilter();
                         bassPeak.type = 'peaking';
                         bassPeak.frequency.value = 60;
-                        bassPeak.gain.value = 4.0;  // +4 dB peak
+                        bassPeak.gain.value = 3.5;  // +3.5 dB peak
                         bassPeak.Q.value = 1.0;
 
                         // 4. Mid Scoop (clarity)
@@ -204,7 +204,7 @@ export const radio = new class RadioEngine {
                         const highShelf = ctx.createBiquadFilter();
                         highShelf.type = 'highshelf';
                         highShelf.frequency.value = 10000;
-                        highShelf.gain.value = 10.0;  // +10 dB treble
+                        highShelf.gain.value = 9.0;  // +9 dB treble
 
                         // --- B. BUS COMPRESSOR (Glue for punch) ---
                         const compressor = ctx.createDynamicsCompressor();
@@ -216,7 +216,7 @@ export const radio = new class RadioEngine {
 
                         // --- MASTER GAIN ---
                         const masterGain = ctx.createGain();
-                        masterGain.gain.value = 0.95;  // 95% volume
+                        masterGain.gain.value = 0.93;  // 93% volume
 
                         // --- CONNECT GRAPH ---
                         // Source -> HPF -> LowShelf -> BassPeak -> Mid -> UpperMid -> HighShelf -> Compressor -> Master -> Analyser -> Out
