@@ -17,9 +17,19 @@ export const radio = new class RadioEngine {
         this.analyser = null;
         this.dataArray = null;
 
-        // Watchdog & Buffering
         this.watchdogInterval = null;
         this.onBufferingChange = null; // UI Hook
+
+        // Silence Detection
+        this.silenceStartTime = null;
+        this.silenceMonitorId = null;
+    }
+
+    reconnect() {
+        console.warn("RadioEngine: Manual/Forced Reconnect");
+        if (this.onBufferingChange) this.onBufferingChange(true);
+        this.pause();
+        setTimeout(() => this.play(), 100);
     }
 
     async init() {
@@ -100,6 +110,8 @@ export const radio = new class RadioEngine {
 
         // 5. Start Watchdog
         this._startBufferingWatchdog();
+        // 6. Start Silence Monitor
+        this._startSilenceMonitor();
     }
 
     _startBufferingWatchdog() {
@@ -146,6 +158,37 @@ export const radio = new class RadioEngine {
                 setTimeout(() => this.play(), 100); // Re-init
             }
         }, 1000);
+    }
+
+    _startSilenceMonitor() {
+        if (this.silenceMonitorId) cancelAnimationFrame(this.silenceMonitorId);
+
+        const monitor = () => {
+            if (!this.isPlaying) {
+                this.silenceMonitorId = null;
+                return;
+            }
+
+            const data = this.getAudioData();
+            if (data) {
+                const avg = data.reduce((a, b) => a + b, 0) / data.length;
+
+                if (avg < 3) {
+                    if (!this.silenceStartTime) {
+                        this.silenceStartTime = Date.now();
+                    } else if (Date.now() - this.silenceStartTime > 5000) {
+                        console.warn("RadioEngine: Silence detected (>5s)");
+                        this.silenceStartTime = null;
+                        this.reconnect();
+                        return;
+                    }
+                } else {
+                    this.silenceStartTime = null;
+                }
+            }
+            this.silenceMonitorId = requestAnimationFrame(monitor);
+        };
+        this.silenceMonitorId = requestAnimationFrame(monitor);
     }
 
     _unlockAudioContext() {

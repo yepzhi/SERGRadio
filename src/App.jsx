@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { radio } from './audio/RadioEngine';
-import { WifiOff, Play, Pause, User } from 'lucide-react';
+import { WifiOff, Play, Pause, User, RefreshCw, Activity } from 'lucide-react';
 import AdSpace from './components/AdSpace';
 import './App.css';
 
@@ -280,7 +280,7 @@ function App() {
 
         {/* Top Right Status & Logo */}
         <div className="absolute top-6 right-6 z-20 flex flex-col items-end gap-1">
-          <div className={`text-xs uppercase tracking-[2px] font-bold flex items-center gap-2 ${isLive ? 'text-blue-500' : 'text-gray-500'}`}>
+          <div className={`text - xs uppercase tracking - [2px] font - bold flex items - center gap - 2 ${isLive ? 'text-blue-500' : 'text-gray-500'} `}>
             {isPlaying && isLive && <span className="w-2 h-2 rounded-full bg-blue-600 live-dot-anim"></span>}
             {isPlaying ? (isBuffering ? 'BUFFERING...' : 'LIVE') : ''}
           </div>
@@ -291,7 +291,7 @@ function App() {
         {/* Play Button */}
         <button
           onClick={togglePlay}
-          className={`play-btn-glow w-28 h-28 md:w-32 md:h-32 rounded-full flex items-center justify-center text-blue-500 hover:text-white transition-colors cursor-pointer relative group mt-4 z-10 ${isBuffering ? 'animate-pulse' : ''}`}
+          className={`play - btn - glow w - 28 h - 28 md: w - 32 md: h - 32 rounded - full flex items - center justify - center text - blue - 500 hover: text - white transition - colors cursor - pointer relative group mt - 4 z - 10 ${isBuffering ? 'animate-pulse' : ''} `}
         >
           {/* Spinner Ring if buffering */}
           {isBuffering && isPlaying ? (
@@ -308,13 +308,31 @@ function App() {
 
         {/* Now Playing Info */}
         <div className="text-center min-h-[60px] flex flex-col items-center justify-center z-10">
+          {/* Connection Status Indicator (v2.6.1) */}
+          {(isPlaying || isBuffering) && (
+            <div className="flex items-center justify-center space-x-2 mb-3">
+              <div className={`flex items - center space - x - 2 px - 3 py - 1 rounded - full bg - black / 40 backdrop - blur - md border border - white / 5 shadow - inner transition - all duration - 300 ${isBuffering ? 'animate-pulse' : ''} `}>
+                <div className={`w - 1.5 h - 1.5 rounded - full ${isBuffering ? 'bg-yellow-500' : (!isOnline ? 'bg-red-500' : 'bg-blue-400')} `}></div>
+                <span className={`text - [9px] uppercase tracking - widest font - bold ${isBuffering ? 'text-yellow-500' : (!isOnline ? 'text-red-500' : 'text-blue-400')} `}>
+                  {isBuffering ? 'Reconnecting...' : (!isOnline ? 'Internet Unstable' : 'Connected Stable')}
+                </span>
+              </div>
+              <button
+                onClick={() => radio.reconnect()}
+                className="p-1.5 rounded-full bg-white/5 hover:bg-white/10 text-gray-500 hover:text-white transition-all active:scale-90 border border-transparent hover:border-white/10"
+                title="Force Refresh Connection">
+                <RefreshCw size={10} />
+              </button>
+            </div>
+          )}
+
           {!isPlaying && (
             <div className="text-sm uppercase tracking-[2px] mb-2 font-medium text-gray-500">
               CLICK TO START
             </div>
           )}
 
-          <div className={`transition-all duration-500 ${isPlaying ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'}`}>
+          <div className={`transition - all duration - 500 ${isPlaying ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'} `}>
             {/* Track Title */}
             {track && track.title && (
               <h2 className="text-base md:text-xl font-bold text-white mb-1 drop-shadow-md max-w-[280px] md:max-w-[400px] text-center leading-tight">
@@ -371,7 +389,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.6.0
+          v2.6.1
         </div>
 
       </div>
