@@ -313,8 +313,8 @@ function App() {
             <p className="text-gray-400 font-light text-lg mb-1 pt-2">
               Streaming Live 24/7
             </p>
-            <p className="text-gray-600 text-[10px] uppercase tracking-wider font-medium">
-              No Ads.
+            <p className="text-gray-600 text-[10px] tracking-wider font-medium">
+              Non-Stop Music, No Ads.
             </p>
           </div>
 
