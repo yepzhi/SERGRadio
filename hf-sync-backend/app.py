@@ -28,15 +28,17 @@ BASE_URL = "https://huggingface.co/spaces/yepzhi/sergradio-sync/resolve/main/tra
 TRACKS_DIR = "tracks"
 os.makedirs(TRACKS_DIR, exist_ok=True)
 
-# Playlist: Long Mixes (Hosted on Hugging Face Spaces)
+# Playlist: DJ Mixes (Hosted on Hugging Face Spaces)
 PLAYLIST = [
-    {"id": "m1", "title": "Doble B Sat 9 Feb Rec 1", "artist": "Serg", "file": "DOBLE B SAT 9 FEB Rec 1.mp3", "weight": 1},
-    {"id": "m2", "title": "Doble B Sat 9 Feb Rec 2", "artist": "Serg", "file": "DOBLE B SAT 9 FEB Rec 2.mp3", "weight": 1},
-    {"id": "m99", "title": "En El Club (Backroom)", "artist": "Serg", "file": "EN EL CLUB CON MIS HOMMIES @BACKROOM.mp3", "weight": 1},
-    {"id": "m5", "title": "Goodbye 2014 Hello 2015", "artist": "Serg", "file": "GOODBYE 2014 HELLO 2015.mp3", "weight": 1},
-    {"id": "m7", "title": "Republica De San Pedro", "artist": "Serg", "file": "SERG @ REPUBLICA DE SAN PEDRO.mp3", "weight": 1},
-    {"id": "m8", "title": "Backroom Hermosillo", "artist": "Serg", "file": "Serg@Backroom Hermosillo SON DANCE.mp3", "weight": 1},
-    {"id": "m9", "title": "The Missing Out Basement", "artist": "Serg", "file": "The Missing Out Basement Invites Serg.mp3", "weight": 1},
+    {"id": "m1", "title": "Doble B Sat 9 Feb Rec 1", "artist": "Serg", "file": "DOBLE B SAT 9 FEB Rec 1 by SERG.mp3", "weight": 1},
+    {"id": "m2", "title": "Doble B Sat 9 Feb Rec 2", "artist": "Serg", "file": "DOBLE B SAT 9 FEB Rec 2 by SERG.mp3", "weight": 1},
+    {"id": "m3", "title": "Everywhere (Serg Edit)", "artist": "Serg", "file": "EVERYWHERE(SERG EDIT).mp3", "weight": 1},
+    {"id": "m4", "title": "Mirrey", "artist": "Serg", "file": "MIRREY by SERG.mp3", "weight": 1},
+    {"id": "m5", "title": "Republica De San Pedro", "artist": "Serg", "file": "SERG @REPUBLICA DE SAN PEDRO.mp3", "weight": 1},
+    {"id": "m6", "title": "Backroom Hermosillo", "artist": "Serg", "file": "Serg @Backroom HMO.mp3", "weight": 1},
+    {"id": "m7", "title": "Serg Minimix v1", "artist": "Serg", "file": "Serg Minimix v1.mp3", "weight": 1},
+    {"id": "m8", "title": "Thursdays At The Decks", "artist": "Serg", "file": "Thursdays At The Decks With Serg.mp3", "weight": 1},
+    {"id": "m9", "title": "Up In The Club With My Homies", "artist": "Serg", "file": "UP IN THE CLUB WITH MY HOMIES.mp3", "weight": 1},
 ]
 
 CLIENTS = []

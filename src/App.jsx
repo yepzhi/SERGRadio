@@ -310,7 +310,13 @@ function App() {
           )}
 
           <div className={`transition-all duration-500 ${isPlaying ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'}`}>
-            <p className="text-gray-400 font-light text-lg mb-1 pt-2">
+            {/* Track Title */}
+            {track && track.title && (
+              <h2 className="text-xl font-bold text-white mb-1 drop-shadow-md">
+                {track.title}
+              </h2>
+            )}
+            <p className="text-gray-400 font-light text-lg mb-1 pt-1">
               Streaming Live 24/7
             </p>
             <p className="text-gray-600 text-[10px] tracking-wider font-medium">
