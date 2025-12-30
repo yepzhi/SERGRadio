@@ -312,7 +312,7 @@ function App() {
           <div className={`transition-all duration-500 ${isPlaying ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'}`}>
             {/* Track Title */}
             {track && track.title && (
-              <h2 className="text-xl font-bold text-white mb-1 drop-shadow-md">
+              <h2 className="text-base md:text-xl font-bold text-white mb-1 drop-shadow-md max-w-[280px] md:max-w-[400px] text-center leading-tight">
                 {track.title}
               </h2>
             )}
