@@ -322,6 +322,9 @@ function App() {
             <p className="text-gray-600 text-[10px] tracking-wider font-medium">
               Non-Stop Music, No Ads.
             </p>
+            <p className="text-emerald-500 text-[9px] tracking-widest font-bold mt-1 opacity-80">
+              Ultra HQ Audio @320 kbps
+            </p>
           </div>
 
         </div>
