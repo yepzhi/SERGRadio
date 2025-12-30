@@ -16,6 +16,10 @@ export const radio = new class RadioEngine {
         this.context = null;
         this.analyser = null;
         this.dataArray = null;
+
+        // Watchdog & Buffering
+        this.watchdogInterval = null;
+        this.onBufferingChange = null; // UI Hook
     }
 
     async init() {
@@ -91,7 +95,54 @@ export const radio = new class RadioEngine {
         }
 
         // 4. Start
+        // 4. Start
         this.howl.play();
+
+        // 5. Start Watchdog
+        this._startBufferingWatchdog();
+    }
+
+    _startBufferingWatchdog() {
+        if (this.watchdogInterval) clearInterval(this.watchdogInterval);
+
+        let stuckTime = 0;
+        let lastTime = -1;
+
+        this.watchdogInterval = setInterval(() => {
+            if (!this.howl || !this.isPlaying) return;
+
+            const sound = this.howl._sounds[0];
+            const node = sound ? sound._node : null;
+
+            if (!node || node.paused) return; // Don't check if intentionally paused
+
+            const currentTime = node.currentTime;
+
+            // Condition: Time hasn't moved significant amount
+            if (Math.abs(currentTime - lastTime) < 0.05) {
+                stuckTime += 1000;
+                // Notify UI: Buffering
+                if (stuckTime >= 1000) { // Only show buffering if stuck > 1s
+                    if (this.onBufferingChange) this.onBufferingChange(true);
+                }
+            } else {
+                // Recovered
+                if (stuckTime > 0) {
+                    if (this.onBufferingChange) this.onBufferingChange(false);
+                }
+                stuckTime = 0;
+            }
+
+            lastTime = currentTime;
+
+            // TRIGGER: Force Reconnect if stuck > 5s
+            if (stuckTime > 5000) {
+                console.warn("RadioEngine: Watchdog triggered! Stream stuck > 5s. force reconnecting...");
+                stuckTime = 0;
+                if (this.howl) this.howl.unload(); // Hard kill
+                setTimeout(() => this.play(), 100); // Re-init
+            }
+        }, 1000);
     }
 
     _unlockAudioContext() {
@@ -121,6 +172,7 @@ export const radio = new class RadioEngine {
             this.howl = null;
         }
         this.isPlaying = false;
+        if (this.watchdogInterval) clearInterval(this.watchdogInterval);
     }
 
     setVolume(val) {
