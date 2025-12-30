@@ -210,9 +210,9 @@ export const radio = new class RadioEngine {
                         const compressor = ctx.createDynamicsCompressor();
                         compressor.threshold.value = -14;  // ~2-6 dB GR on peaks
                         compressor.knee.value = 6;
-                        compressor.ratio.value = 3.8;      // Medium-strong
-                        compressor.attack.value = 0.008;   // 8ms (transient punch)
-                        compressor.release.value = 0.12;   // 120ms (fast energy)
+                        compressor.ratio.value = 3.0;      // Gentler squeeze (was 3.8)
+                        compressor.attack.value = 0.008;   // 8ms
+                        compressor.release.value = 0.25;   // 250ms (smoother, less pumping)
 
                         // --- MASTER GAIN ---
                         const masterGain = ctx.createGain();
