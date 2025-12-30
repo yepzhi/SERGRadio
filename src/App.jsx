@@ -310,8 +310,11 @@ function App() {
           )}
 
           <div className={`transition-all duration-500 ${isPlaying ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'}`}>
-            <p className="text-gray-400 font-light text-lg mb-3 pt-2">
+            <p className="text-gray-400 font-light text-lg mb-1 pt-2">
               Streaming Live 24/7
+            </p>
+            <p className="text-gray-600 text-[10px] uppercase tracking-wider font-medium">
+              No Ads.
             </p>
           </div>
 
@@ -357,7 +360,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.2.8
+          v2.4.0
         </div>
 
       </div>
