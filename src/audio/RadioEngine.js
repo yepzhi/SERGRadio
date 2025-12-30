@@ -139,7 +139,10 @@ export const radio = new class RadioEngine {
             if (stuckTime > 5000) {
                 console.warn("RadioEngine: Watchdog triggered! Stream stuck > 5s. force reconnecting...");
                 stuckTime = 0;
-                if (this.howl) this.howl.unload(); // Hard kill
+
+                // CRITICAL: Clean stop to reset isPlaying state so play() works
+                this.pause();
+
                 setTimeout(() => this.play(), 100); // Re-init
             }
         }, 1000);
