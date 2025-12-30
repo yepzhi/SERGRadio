@@ -303,8 +303,8 @@ function App() {
 
         {/* Top Right Status & Logo */}
         <div className="absolute top-6 right-6 z-20 flex flex-col items-end gap-1">
-          <div className={`text - xs uppercase tracking - [2px] font - bold flex items - center gap - 2 ${isLive ? 'text-blue-500' : 'text-gray-500'} `}>
-            {isPlaying && isLive && <span className="w-2 h-2 rounded-full bg-blue-600 live-dot-anim"></span>}
+          <div className={`text-xs uppercase tracking-[2px] font-bold flex items-center gap-2 leading-none ${isLive ? 'text-blue-500' : 'text-gray-500'}`}>
+            {isPlaying && isLive && <span className="w-2 h-2 rounded-full bg-blue-600 live-dot-anim relative top-[0.5px]"></span>}
             {isPlaying ? (isBuffering ? 'BUFFERING...' : 'LIVE') : ''}
           </div>
           {/* HD Radio Logo - Top Right */}
@@ -394,7 +394,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.6.2
+          v2.6.3
         </div>
 
       </div>
