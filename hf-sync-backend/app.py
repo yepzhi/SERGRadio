@@ -4,6 +4,7 @@ import threading
 import glob
 import random
 import requests
+from urllib.parse import quote
 import subprocess
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
@@ -43,16 +44,18 @@ PLAYLIST = [
 
 CLIENTS = []
 # Global Circular Buffer for Burst-on-Connect
-# Stores last ~6 seconds of audio to fast-fill client buffer (Anti-Starvation)
-# 192kbps = 24KB/s. 16KB chunks. 1.5 chunks/s. 10 chunks = ~6 seconds.
-BURST_BUFFER = deque(maxlen=10) 
+# Stores last ~60 seconds of audio to fast-fill client buffer (Anti-Starvation for unstable connections)
+# 320kbps = 40KB/s. 16KB chunks. 2.5 chunks/s. 100 chunks = ~40 seconds.
+BURST_BUFFER = deque(maxlen=100) 
 CURRENT_TRACK_INFO = {"title": "Connecting...", "artist": "SERGRadio"}
 
 # Track Manager Queue
 READY_TRACKS = Queue(maxsize=2) # Reduced buffer size for large files (storage)
 
 def download_track(filename):
-    url = f"{BASE_URL}{filename}"
+    # URL-encode filename to handle spaces and special chars
+    encoded_filename = quote(filename)
+    url = f"{BASE_URL}{encoded_filename}"
     local_path = os.path.join(TRACKS_DIR, filename)
     
     # Check if exists and > 10MB (simple check for "not empty")
@@ -120,8 +123,8 @@ def broadcast_stream():
             '-re', 
             '-i', local_path,
             '-f', 'mp3',
-            '-b:a', '192k',
-            '-bufsize', '512k',
+            '-b:a', '320k',
+            '-bufsize', '1024k',
             '-ac', '2',
             '-ar', '44100',
             '-loglevel', 'error',
