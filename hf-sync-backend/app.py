@@ -225,7 +225,7 @@ def broadcast_stream():
                 '-bufsize', '8192k',  # Large buffer for smooth output
                 '-ac', '2',
                 '-ar', '44100',
-                '-af', 'highpass=f=28,lowshelf=g=7:f=95,equalizer=f=60:width_type=o:width=2:g=4,equalizer=f=800:width_type=o:width=2:g=-3,highshelf=g=9:f=10000,acompressor=threshold=-14dB:ratio=3:attack=8:release=250',
+                '-af', 'highpass=f=28,lowshelf=g=7:f=95,equalizer=f=60:width_type=o:width=2:g=4,equalizer=f=800:width_type=o:width=2:g=-3,highshelf=g=9:f=10000,acompressor=threshold=-14dB:ratio=2:attack=8:release=250',
                 '-loglevel', 'error',
                 'pipe:1'
             ]
@@ -289,7 +289,7 @@ def index():
     }
     return {
         "status": "radio_active",
-        "version": "2.9.9",
+        "version": "2.9.10",
         "mode": "local_file_streaming",
         "quality": "320kbps CBR",
         "listeners": len(CLIENTS),
