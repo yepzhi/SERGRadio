@@ -51,7 +51,8 @@ BURST_BUFFER = deque(maxlen=100)
 CURRENT_TRACK_INFO = {"title": "Connecting...", "artist": "SERGRadio"}
 
 # Track Manager Queue
-READY_TRACKS = Queue(maxsize=2) # Reduced buffer size for large files (storage)
+# Track Manager Queue - Increased to prevent stalls on large files
+READY_TRACKS = Queue(maxsize=4)
 
 def download_track(filename):
     # URL-encode filename to handle spaces and special chars
@@ -115,8 +116,10 @@ def broadcast_stream():
     CHUNK_SIZE = 16384 
     
     while True:
-        # Get next ready track (blocking if empty, but manager should keep it full)
+        # Get next ready track (blocking if empty)
+        print("Fetching next track from queue...")
         item = READY_TRACKS.get()
+        print(f"Got track from queue: {item['track']['title']}")
         track = item['track']
         local_path = item['path']
             
