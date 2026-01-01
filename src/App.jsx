@@ -217,9 +217,11 @@ function App() {
       let bassEnergy = 0;
       if (data) {
         // Focus on sub-bass/kick range (approx 40-150Hz)
-        // Bin 0 is usually DC offset. Bins 1-8 are powerful kick range.
-        for (let i = 1; i < 8; i++) bassEnergy += data[i];
-        bassEnergy /= 8; // Average
+        // Fix for fftSize=64 (Bin width ~690Hz).
+        // Bin 0 (0-690Hz) contains all the Kick/Bass energy.
+        // Bin 1 (690-1380Hz) is Low Mids.
+        for (let i = 0; i < 3; i++) bassEnergy += data[i]; // Check Bins 0-2
+        bassEnergy /= 3; // Average
         bassEnergy /= 255; // Normalize 0-1
       }
 
@@ -486,7 +488,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.9.5
+          v2.9.6
         </div>
 
       </div>
