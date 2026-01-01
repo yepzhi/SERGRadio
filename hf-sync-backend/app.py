@@ -43,8 +43,9 @@ PLAYLIST = [
 
 # Global State
 CLIENTS = []
-# BURST_BUFFER: Pre-fills new clients for instant playback (~100 seconds)
-BURST_BUFFER = deque(maxlen=250)
+# BURST_BUFFER: Pre-fills new clients for instant playback
+# Reduced to ~10 seconds (25 chunks) to prevent "Jumping Back" on reconnects
+BURST_BUFFER = deque(maxlen=25)
 CURRENT_TRACK_INFO = {"title": "Connecting...", "artist": "SERGRadio"}
 
 # Track Queue for pre-downloaded files
@@ -239,7 +240,7 @@ def index():
     }
     return {
         "status": "radio_active",
-        "version": "2.7.4",
+        "version": "2.8.0",
         "mode": "local_file_streaming",
         "quality": "320kbps CBR",
         "listeners": len(CLIENTS),
@@ -278,8 +279,12 @@ def stream_audio():
         "Cache-Control": "no-cache, no-store, must-revalidate",
         "Pragma": "no-cache",
         "Expires": "0",
-        "X-Accel-Buffering": "no",
+        "Internal-Topic": "radio-stream",
         "Connection": "keep-alive",
+        "Content-Type": "audio/mpeg",
+        "ice-name": "SERGRadio",
+        "ice-description": "Live DJ Mixes",
+        "ice-audio-info": "bitrate=320",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Expose-Headers": "*",
         "X-Content-Type-Options": "nosniff"
