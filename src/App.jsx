@@ -213,25 +213,31 @@ function App() {
       // Get Data
       const data = radio.getAudioData();
 
-      // Calculate Bass Energy (reaction factor)
+      // Calculate Bass Energy (Low Frequencies)
       let bassEnergy = 0;
       if (data) {
-        // Sum first 10 bins (low freq)
-        for (let i = 0; i < 10; i++) bassEnergy += data[i];
-        bassEnergy /= 10; // Average 0-255
+        // Focus on sub-bass/kick range (approx 40-150Hz)
+        // Bin 0 is usually DC offset. Bins 1-8 are powerful kick range.
+        for (let i = 1; i < 8; i++) bassEnergy += data[i];
+        bassEnergy /= 8; // Average
         bassEnergy /= 255; // Normalize 0-1
       }
 
-      // Idle movement if no audio
+      // Smooth reaction for idle state
       const reaction = isPlaying && !isBuffering ? bassEnergy : 0.05;
+
+      // "Kick" Detection - Non-linear boost for visual impact
+      const kick = Math.pow(reaction, 2) * 4;
 
       ctx.clearRect(0, 0, width, height);
 
       // Draw Particles
       particles.current.forEach(p => {
-        // Update Position
-        p.x += p.speedX;
-        p.y += p.speedY;
+        // Dynamic Movement: Speed up on bass hits
+        const speedMultiplier = 1 + (kick * 2);
+
+        p.x += p.speedX * speedMultiplier;
+        p.y += p.speedY * speedMultiplier;
 
         // Wrap around
         if (p.x < 0) p.x = width;
@@ -239,19 +245,17 @@ function App() {
         if (p.y < 0) p.y = height;
         if (p.y > height) p.y = 0;
 
-        // React to Audio
-        // Size pulses with bass
-        const boost = reaction * 3;
-        const radius = p.baseRadius + boost;
+        // Visual Reaction
+        // Radius pulses significantly with bass
+        const radius = p.baseRadius + (kick * 3);
 
-        // Color based on intensity
-        // Idle: White/Gold faint. Active: Red/Gold bright.
-        const alpha = 0.3 + reaction * 0.7;
+        // Opacity increases with energy
+        const alpha = 0.2 + (reaction * 0.8);
 
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`; // White stars (for blue theme)
-        ctx.shadowBlur = reaction * 10;
+        ctx.fillStyle = `rgba(255, 255, 255, ${alpha})`; // White core
+        ctx.shadowBlur = kick * 15; // Glow pulses with kick
         ctx.shadowColor = '#3b82f6'; // Blue glow
         ctx.fill();
 
@@ -482,7 +486,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.8.8
+          v2.8.9
         </div>
 
       </div>
