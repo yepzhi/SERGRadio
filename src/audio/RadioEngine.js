@@ -275,13 +275,13 @@ export const radio = new class RadioEngine {
                         const lowShelf = ctx.createBiquadFilter();
                         lowShelf.type = 'lowshelf';
                         lowShelf.frequency.value = 95;
-                        lowShelf.gain.value = 7.0;  // +7 dB bass
+                        lowShelf.gain.value = 9.0;  // +9 dB bass (Profound Feel)
 
                         // 3. Bass Peak (sub-kick weight)
                         const bassPeak = ctx.createBiquadFilter();
                         bassPeak.type = 'peaking';
                         bassPeak.frequency.value = 60;
-                        bassPeak.gain.value = 3.5;  // +3.5 dB peak
+                        bassPeak.gain.value = 5.0;  // +5.0 dB peak
                         bassPeak.Q.value = 1.0;
 
                         // 4. Mid Scoop (clarity)

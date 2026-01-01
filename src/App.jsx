@@ -280,16 +280,15 @@ function App() {
 
 
         {/* Top LEFT Status (v2.6.2) */}
-        {(isPlaying || isBuffering) && (
-          <div className="absolute top-6 left-6 z-20 flex items-center space-x-2 animate-in fade-in duration-500">
-            <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-full bg-black/60 border border-white/10 shadow-lg backdrop-blur-md transition-all duration-300 ${isBuffering ? 'animate-pulse border-blue-500/50' : ''}`}>
-              <div className={`w-1.5 h-1.5 rounded-full ${isBuffering ? 'bg-yellow-500' : (!isOnline ? 'bg-red-500' : 'bg-blue-400')}`}></div>
-              <span className={`text-[9px] uppercase tracking-widest font-bold ${isBuffering ? 'text-yellow-500' : (!isOnline ? 'text-red-500' : 'text-blue-400')}`}>
-                {isBuffering ? 'Reconnecting...' : (!isOnline ? 'Unstable' : 'Stable')}
-              </span>
-            </div>
+        {(isPlaying || isBuffering) && <div className="absolute top-6 left-6 z-20 flex items-center space-x-2 animate-in fade-in duration-500">
+          <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-full bg-black/60 border border-white/10 shadow-lg backdrop-blur-md transition-all duration-300 ${isBuffering ? 'animate-pulse border-emerald-500/50' : ''}`}>
+            <div className={`w-1.5 h-1.5 rounded-full ${isBuffering ? 'bg-yellow-500' : (!isOnline ? 'bg-red-500' : 'bg-emerald-400')}`}></div>
+            <span className={`text-[9px] uppercase tracking-widest font-bold ${isBuffering ? 'text-yellow-500' : (!isOnline ? 'text-red-500' : 'text-emerald-400')}`}>
+              {isBuffering ? 'Reconnecting...' : (!isOnline ? 'Unstable' : 'Stable')}
+            </span>
           </div>
-        )}
+        </div>
+        }
 
         {/* Bottom LEFT Refresh Button (v2.6.2) */}
         {(isPlaying || isBuffering) && (
@@ -394,7 +393,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.6.3
+          v2.6.4
         </div>
 
       </div>

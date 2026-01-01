@@ -3,6 +3,7 @@ import time
 import threading
 import glob
 import random
+import json
 import requests
 from urllib.parse import quote
 import subprocess
@@ -171,15 +172,40 @@ def broadcast_stream():
 # Track Shuffle Bag (Even Distribution)
 SHUFFLE_BAG = []
 
+STATE_FILE = "shuffle_state.json"
+
 def select_next_track():
     global SHUFFLE_BAG
     if not SHUFFLE_BAG:
-        # Refill and shuffle
-        SHUFFLE_BAG = list(PLAYLIST)
-        random.shuffle(SHUFFLE_BAG)
-        print("Refilled Shuffle Bag")
+        # 1. Try Load State
+        if os.path.exists(STATE_FILE):
+             try:
+                 with open(STATE_FILE, 'r') as f:
+                     SHUFFLE_BAG = json.load(f)
+                 print(f"Loaded Shuffle Bag from state: {len(SHUFFLE_BAG)} items")
+             except Exception as e:
+                 print(f"Failed to load shuffle state: {e}")
+        
+        # 2. If still empty, refill
+        if not SHUFFLE_BAG:
+            SHUFFLE_BAG = list(PLAYLIST)
+            random.shuffle(SHUFFLE_BAG)
+            print("Refilled Shuffle Bag (Fresh)")
+
+    # Pop track
+    if not SHUFFLE_BAG: # Safety
+        return random.choice(PLAYLIST)
+
+    track = SHUFFLE_BAG.pop()
     
-    return SHUFFLE_BAG.pop()
+    # 3. Save State
+    try:
+        with open(STATE_FILE, 'w') as f:
+            json.dump(SHUFFLE_BAG, f)
+    except Exception as e:
+        print(f"Failed to save shuffle state: {e}")
+    
+    return track
 
 # Broadcast Thread using FFmpeg subprocess
 def broadcast_stream():
