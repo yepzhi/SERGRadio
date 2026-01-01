@@ -49,8 +49,9 @@ BURST_BUFFER = deque(maxlen=25)
 CURRENT_TRACK_INFO = {"title": "Connecting...", "artist": "SERGRadio"}
 
 # Track Queue for pre-downloaded files
-# Track Queue for pre-downloaded files (2 is enough for 200MB+ files)
-READY_TRACKS = Queue(maxsize=2)
+# Track Queue for pre-downloaded files
+# Increased to 3 to ensure FULL mixes are ready well in advance
+READY_TRACKS = Queue(maxsize=3)
 
 # Track Shuffle Bag (Even Distribution)
 SHUFFLE_BAG = []
@@ -160,8 +161,8 @@ def broadcast_stream():
                 continue
                 
             file_size = os.path.getsize(local_path)
-            if file_size < 1024 * 1024:  # Less than 1MB = probably corrupt
-                print(f"File too small, skipping: {local_path}")
+            if file_size < 10 * 1024 * 1024:  # Less than 10MB = definitely corrupt for a mix
+                print(f"File too small ({file_size} bytes), skipping: {local_path}")
                 os.remove(local_path)  # Remove corrupt file
                 continue
             
@@ -240,7 +241,7 @@ def index():
     }
     return {
         "status": "radio_active",
-        "version": "2.8.0",
+        "version": "2.8.1",
         "mode": "local_file_streaming",
         "quality": "320kbps CBR",
         "listeners": len(CLIENTS),
