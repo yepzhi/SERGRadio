@@ -41,6 +41,44 @@ PLAYLIST = [
     {"id": "m9", "title": "Up In The Club With My Homies", "artist": "Serg", "file": "UP IN THE CLUB WITH MY HOMIES.mp3"},
 ]
 
+def validate_playlist():
+    """Filter playlist to only include tracks that actually exist on the server"""
+    print("Validating Playlist Consistency...")
+    valid_playlist = []
+    
+    # Use a session for connection pooling
+    session = requests.Session()
+    token = os.environ.get("HF_TOKEN")
+    if token:
+        session.headers.update({"Authorization": f"Bearer {token}"})
+
+    for track in PLAYLIST:
+        try:
+            filename = quote(track['file'])
+            url = f"{BASE_URL}{filename}"
+            # Head request to check existence without downloading
+            r = session.head(url, timeout=5, allow_redirects=True)
+            
+            if r.status_code == 200:
+                print(f" [OK] {track['title']}")
+                valid_playlist.append(track)
+            elif r.status_code == 404:
+                print(f" [MISSING] {track['title']} (404 Not Found)")
+            else:
+                print(f" [WARNING] {track['title']} (Status {r.status_code}) - Keeping just in case")
+                valid_playlist.append(track) # Keep non-404 errors (might be transient)
+                
+        except Exception as e:
+            print(f" [ERROR] {track['title']}: {e}")
+            # Keep safely if check fails (fallback to download retry logic)
+            valid_playlist.append(track)
+            
+    print(f"Playlist Validation Complete: {len(valid_playlist)}/{len(PLAYLIST)} tracks valid.")
+    return valid_playlist
+
+# Run Validation Immediately
+PLAYLIST = validate_playlist()
+
 # Global State
 CLIENTS = []
 # BURST_BUFFER: Pre-fills new clients for instant playback
@@ -280,7 +318,7 @@ def index():
     }
     return {
         "status": "radio_active",
-        "version": "2.9.0",
+        "version": "2.9.1",
         "mode": "local_file_streaming",
         "quality": "320kbps CBR",
         "listeners": len(CLIENTS),
