@@ -383,6 +383,16 @@ function App() {
           </div>
           {/* HD Radio Logo - Top Right */}
           <img src="/SERGRadio/hd-logo.png" alt="HD Radio" className="h-5 opacity-90 mt-1" />
+
+          {/* Timer - Force Right Side (v2.8.7) */}
+          {track && track.duration > 0 && (
+            <div className="flex flex-col items-end mt-2 opacity-80">
+              <span className="text-[8px] text-gray-500 font-bold tracking-wider">This mix ends in:</span>
+              <span className="text-[8px] text-blue-400 font-mono tracking-wider">
+                <CountdownTimer startedAt={track.started_at} duration={track.duration} />
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Play Button */}
@@ -415,15 +425,7 @@ function App() {
             {/* Track Title */}
             {track && track.title && (
               <div className="relative inline-block flex flex-col items-center">
-                {/* Timer - Above Song Name (Lower Right of Play Button roughly) */}
-                {track.duration > 0 && (
-                  <div className="flex items-center space-x-1 mb-1 opacity-80 self-end">
-                    <span className="text-[8px] text-gray-500 font-bold tracking-wider">This mix ends in:</span>
-                    <span className="text-[8px] text-blue-400 font-mono tracking-wider">
-                      <CountdownTimer startedAt={track.started_at} duration={track.duration} />
-                    </span>
-                  </div>
-                )}
+
 
                 <h2 className="text-base md:text-xl font-bold text-white mb-1 drop-shadow-md max-w-[280px] md:max-w-[400px] text-center leading-tight">
                   {track.title}
@@ -480,7 +482,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.8.6
+          v2.8.7
         </div>
 
       </div>
