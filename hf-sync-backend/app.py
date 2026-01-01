@@ -91,55 +91,25 @@ CURRENT_TRACK_INFO = {"title": "Connecting...", "artist": "SERGRadio"}
 # Increased to 3 to ensure FULL mixes are ready well in advance
 READY_TRACKS = Queue(maxsize=3)
 
-# Track Shuffle Bag (Even Distribution)
-SHUFFLE_BAG = []
-STATE_FILE = "shuffle_state.json"
-LAST_PLAYED_ID = None
+# Sequential Playback State
+CURRENT_INDEX = 0
 
 def select_next_track():
-    """Select next track using shuffle bag for even distribution, preventing immediate repeats"""
-    global SHUFFLE_BAG, LAST_PLAYED_ID
-    if not SHUFFLE_BAG:
-        if os.path.exists(STATE_FILE):
-            try:
-                with open(STATE_FILE, 'r') as f:
-                    SHUFFLE_BAG = json.load(f)
-                print(f"Loaded Shuffle Bag: {len(SHUFFLE_BAG)} items")
-            except:
-                pass
-        
-        if not SHUFFLE_BAG:
-            SHUFFLE_BAG = list(PLAYLIST)
-            random.shuffle(SHUFFLE_BAG)
-            print("Refilled Shuffle Bag")
-
-    if not SHUFFLE_BAG:
-        return random.choice(PLAYLIST)
-
-    # Smart Shuffle: Check if next track is same as last played
-    # If so, and we have alternatives, swap it!
-    if LAST_PLAYED_ID and len(SHUFFLE_BAG) > 0:
-        if SHUFFLE_BAG[-1]['id'] == LAST_PLAYED_ID:
-            if len(SHUFFLE_BAG) > 1:
-                # Swap with a random other track in the bag
-                swap_idx = random.randint(0, len(SHUFFLE_BAG) - 2)
-                print(f"Shuffle: Avoiding repeat of {LAST_PLAYED_ID}, swapping with index {swap_idx}")
-                SHUFFLE_BAG[-1], SHUFFLE_BAG[swap_idx] = SHUFFLE_BAG[swap_idx], SHUFFLE_BAG[-1]
-            else:
-                 # Only 1 track in bag and it's the same... 
-                 # If Playlist has > 1 item, we might be unlucky (bag end -> refill -> same start).
-                 # But we just refilled! Refill logic handles shuffle.
-                 # Let's just shuffle the new bag again if start matches?
-                 pass
-
-    track = SHUFFLE_BAG.pop()
-    LAST_PLAYED_ID = track['id']
+    """Select next track in strict sequential order (Loop)"""
+    global CURRENT_INDEX
     
-    try:
-        with open(STATE_FILE, 'w') as f:
-            json.dump(SHUFFLE_BAG, f)
-    except:
-        pass
+    if not PLAYLIST:
+        print("ERROR: Playlist is empty!")
+        # Fallback to a dummy track or crash?
+        # But we validated it.
+        return None
+
+    # Get current track
+    track = PLAYLIST[CURRENT_INDEX]
+    print(f"Selected Track [{CURRENT_INDEX + 1}/{len(PLAYLIST)}]: {track['title']}")
+    
+    # Advance Index (Loop back to 0 at end)
+    CURRENT_INDEX = (CURRENT_INDEX + 1) % len(PLAYLIST)
     
     return track
 
@@ -318,7 +288,7 @@ def index():
     }
     return {
         "status": "radio_active",
-        "version": "2.9.1",
+        "version": "2.9.2",
         "mode": "local_file_streaming",
         "quality": "320kbps CBR",
         "listeners": len(CLIENTS),
