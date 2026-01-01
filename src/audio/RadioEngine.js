@@ -5,7 +5,7 @@ export const radio = new class RadioEngine {
         this.streamUrl = 'https://yepzhi-sergradio-sync.hf.space/stream';
         this.howl = null;
         this.isPlaying = false;
-        this.volume = 0.6;
+        this.volume = 1.0;
 
         // Hooks
         this.onPlay = null;

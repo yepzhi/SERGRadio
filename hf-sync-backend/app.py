@@ -288,7 +288,7 @@ def index():
     }
     return {
         "status": "radio_active",
-        "version": "2.9.2",
+        "version": "2.9.3",
         "mode": "local_file_streaming",
         "quality": "320kbps CBR",
         "listeners": len(CLIENTS),
