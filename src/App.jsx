@@ -270,8 +270,8 @@ function App() {
 
       {/* Live Status & Listeners - REMOVED (Moved below) */}
 
-      {/* Player Card (Glass) */}
-      <div className="glass-panel rounded-[30px] p-6 md:p-8 lg:p-10 w-full md:w-auto min-w-[300px] md:min-w-[450px] flex flex-col items-center gap-4 md:gap-5 mb-1 transition-all duration-500 relative overflow-hidden">
+      {/* Player Card (Glass - Extra Foggy) */}
+      <div className="glass-panel backdrop-blur-3xl rounded-[30px] p-6 md:p-8 lg:p-10 w-full md:w-auto min-w-[300px] md:min-w-[450px] flex flex-col items-center gap-4 md:gap-5 mb-1 transition-all duration-500 relative overflow-hidden">
 
         {/* Real-Time Visualizer (Canvas Background) */}
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-60 z-0 h-32">
@@ -313,7 +313,7 @@ function App() {
         {/* Play Button */}
         <button
           onClick={togglePlay}
-          className={`play - btn - glow w - 28 h - 28 md: w - 32 md: h - 32 rounded - full flex items - center justify - center text - blue - 500 hover: text - white transition - colors cursor - pointer relative group mt - 4 z - 10 ${isBuffering ? 'animate-pulse' : ''} `}
+          className={`play-btn-glow w-28 h-28 md:w-32 md:h-32 rounded-full flex items-center justify-center text-blue-500 hover:text-white transition-colors cursor-pointer relative group mt-4 z-10 ${isBuffering ? 'animate-pulse' : ''}`}
         >
           {/* Spinner Ring if buffering */}
           {isBuffering && isPlaying ? (
@@ -393,7 +393,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.6.5
+          v2.6.6
         </div>
 
       </div>

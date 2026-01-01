@@ -66,7 +66,7 @@ export const radio = new class RadioEngine {
 
         // 2. Create new Howl instance
         this.howl = new Howl({
-            src: [this.streamUrl],
+            src: [this.streamUrl + '?t=' + Date.now()],
             format: ['mp3'],
             html5: true, // Required for long streams & iOS background audio
             volume: this.volume,
