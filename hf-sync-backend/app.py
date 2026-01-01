@@ -67,7 +67,12 @@ def download_track(filename):
     print(f"Downloading {filename}...")
     try:
         # Increase timeout to 30 mins (1800s) for 300MB+ files
-        r = requests.get(url, stream=True, timeout=1800)
+        headers = {}
+        token = os.environ.get("HF_TOKEN")
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+            
+        r = requests.get(url, stream=True, timeout=1800, headers=headers)
         if r.status_code == 200:
             with open(local_path, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=65536):
