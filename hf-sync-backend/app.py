@@ -112,14 +112,15 @@ def broadcast_stream():
             CURRENT_TRACK_INFO = track
             
             # FFmpeg Command with HTTP input
-            # -headers: Add Authorization for HF access
-            # -re: Real-time playback speed
+            # -re: Real-time playback speed (critical for live streaming)
             # -reconnect: Auto-reconnect on network issues
+            # -rw_timeout: Read/Write timeout in microseconds (30 seconds)
             cmd = [
                 'ffmpeg',
                 '-reconnect', '1',
                 '-reconnect_streamed', '1', 
-                '-reconnect_delay_max', '5',
+                '-reconnect_delay_max', '10',
+                '-rw_timeout', '30000000',  # 30 second timeout
             ]
             
             # Add auth header if token available
@@ -127,12 +128,13 @@ def broadcast_stream():
                 cmd.extend(['-headers', f'Authorization: Bearer {hf_token}\r\n'])
             
             cmd.extend([
+                '-re',  # Real-time playback speed
                 '-i', track_url,
                 '-vn',  # No video
-                '-af', 'silenceremove=stop_periods=-1:stop_duration=2:stop_threshold=-50dB',
+                # NOTE: silenceremove removed - causes issues with HTTP streaming
                 '-f', 'mp3',
                 '-b:a', '320k',
-                '-bufsize', '1024k',
+                '-bufsize', '2048k',  # Larger buffer for stability
                 '-ac', '2',
                 '-ar', '44100',
                 '-loglevel', 'warning',
@@ -189,13 +191,18 @@ threading.Thread(target=broadcast_stream, daemon=True).start()
 
 @app.get("/")
 def index():
+    # Clean response - only expose relevant info
+    now_playing = {
+        "title": CURRENT_TRACK_INFO.get("title", "Unknown"),
+        "artist": CURRENT_TRACK_INFO.get("artist", "SERGRadio")
+    }
     return {
         "status": "radio_active", 
         "version": "2.7.0",
         "mode": "direct_http_streaming",
         "quality": "320kbps CBR",
         "listeners": len(CLIENTS),
-        "now_playing": CURRENT_TRACK_INFO
+        "now_playing": now_playing
     }
 
 @app.get("/stream")
