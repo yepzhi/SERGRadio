@@ -161,13 +161,24 @@ def broadcast_stream():
                 continue
                 
             file_size = os.path.getsize(local_path)
-            if file_size < 10 * 1024 * 1024:  # Less than 10MB = definitely corrupt for a mix
+            # Lowered check to 3MB (User has some 10MB mixes)
+            if file_size < 3 * 1024 * 1024: 
                 print(f"File too small ({file_size} bytes), skipping: {local_path}")
                 os.remove(local_path)  # Remove corrupt file
                 continue
             
-            print(f"NOW PLAYING: {track['title']} ({file_size / (1024*1024):.1f} MB)")
-            CURRENT_TRACK_INFO = track
+            # DELAYED METADATA UPDATE
+            # The server buffers ~20s of audio before it reaches the client.
+            # We delay the "Now Playing" update so it matches what the user hears.
+            def update_meta_delayed():
+                 global CURRENT_TRACK_INFO
+                 CURRENT_TRACK_INFO = track
+                 print(f"METADATA UPDATED: {track['title']}")
+            
+            # 20 second delay to match buffer latency
+            threading.Timer(20.0, update_meta_delayed).start()
+            
+            print(f"STREAMING START: {track['title']} ({file_size / (1024*1024):.1f} MB)")
             
             # FFmpeg command for local file playback
             cmd = [
@@ -241,7 +252,7 @@ def index():
     }
     return {
         "status": "radio_active",
-        "version": "2.8.1",
+        "version": "2.8.2",
         "mode": "local_file_streaming",
         "quality": "320kbps CBR",
         "listeners": len(CLIENTS),
