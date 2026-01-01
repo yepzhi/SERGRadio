@@ -123,6 +123,7 @@ def broadcast_stream():
             'ffmpeg',
             '-re', 
             '-i', local_path,
+            '-af', 'silenceremove=stop_periods=-1:stop_duration=2:stop_threshold=-50dB',
             '-f', 'mp3',
             '-b:a', '320k',
             '-bufsize', '1024k',

@@ -393,7 +393,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.6.4
+          v2.6.5
         </div>
 
       </div>
