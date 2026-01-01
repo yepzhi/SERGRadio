@@ -48,7 +48,8 @@ BURST_BUFFER = deque(maxlen=250)
 CURRENT_TRACK_INFO = {"title": "Connecting...", "artist": "SERGRadio"}
 
 # Track Queue for pre-downloaded files
-READY_TRACKS = Queue(maxsize=3)
+# Track Queue for pre-downloaded files (2 is enough for 200MB+ files)
+READY_TRACKS = Queue(maxsize=2)
 
 # Track Shuffle Bag (Even Distribution)
 SHUFFLE_BAG = []
@@ -141,7 +142,8 @@ def broadcast_stream():
     global CURRENT_TRACK_INFO
     print("Broadcast started (Local File Mode)")
     
-    CHUNK_SIZE = 16384
+    # Larger chunks for smoother continuous playback (64KB)
+    CHUNK_SIZE = 65536
     
     while True:
         try:
@@ -173,7 +175,7 @@ def broadcast_stream():
                 '-vn',
                 '-f', 'mp3',
                 '-b:a', '320k',
-                '-bufsize', '4096k',
+                '-bufsize', '8192k',  # Large buffer for smooth output
                 '-ac', '2',
                 '-ar', '44100',
                 '-loglevel', 'error',
@@ -237,7 +239,7 @@ def index():
     }
     return {
         "status": "radio_active",
-        "version": "2.7.2",
+        "version": "2.7.3",
         "mode": "local_file_streaming",
         "quality": "320kbps CBR",
         "listeners": len(CLIENTS),
