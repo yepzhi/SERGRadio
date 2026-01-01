@@ -148,6 +148,8 @@ export const radio = new class RadioEngine {
             lastTime = currentTime;
 
             // TRIGGER: Force Reconnect if stuck > 5s
+            // DISABLED by user request (v2.7.4) - avoids jumps/restarts
+            /*
             if (stuckTime > 5000) {
                 console.warn("RadioEngine: Watchdog triggered! Stream stuck > 5s. force reconnecting...");
                 stuckTime = 0;
@@ -157,6 +159,7 @@ export const radio = new class RadioEngine {
 
                 setTimeout(() => this.play(), 100); // Re-init
             }
+            */
         }, 1000);
     }
 
@@ -179,7 +182,7 @@ export const radio = new class RadioEngine {
                     } else if (Date.now() - this.silenceStartTime > 5000) {
                         console.warn("RadioEngine: Silence detected (>5s)");
                         this.silenceStartTime = null;
-                        this.reconnect();
+                        // this.reconnect(); // DISABLED (v2.7.4)
                         return;
                     }
                 } else {
