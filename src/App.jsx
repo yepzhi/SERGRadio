@@ -41,25 +41,38 @@ const CountdownTimer = ({ startedAt, duration }) => {
   return <span>{timeLeft}</span>;
 };
 
-const BitrateIndicator = ({ isPlaying }) => {
-  const [rate, setRate] = useState(0.04);
+const DataMonitor = ({ isPlaying }) => {
+  const [stats, setStats] = useState({ speed: 0, total: 0 });
 
   useEffect(() => {
-    if (!isPlaying) return;
-    const interval = setInterval(() => {
-      // Fluctuate slightly around 0.04 MB/s (32kbps)
-      const variation = (Math.random() - 0.5) * 0.01;
-      setRate(Math.max(0.01, 0.04 + variation));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [isPlaying]);
+    // Hook into RadioEngine real stats
+    radio.onNetworkStats = (newStats) => {
+      setStats(newStats);
+    };
+    return () => { radio.onNetworkStats = null; };
+  }, []);
+
+  if (!isPlaying) return null;
+
+  // Format Speed: Bytes -> KB/s
+  const speedKB = (stats.speed / 1024).toFixed(0);
+  // Format Total: Bytes -> MB
+  const totalMB = (stats.total / (1024 * 1024)).toFixed(2);
 
   return (
-    <div className="mt-1 flex items-center space-x-1 opacity-70">
-      <Activity size={8} className="text-blue-400" />
-      <span className="text-[8px] font-mono text-blue-300 tracking-wider">
-        {isPlaying ? rate.toFixed(3) : '0.000'} MB/s
-      </span>
+    <div className="mt-1 flex flex-col items-start opacity-70">
+      <div className="flex items-center space-x-1">
+        <Activity size={8} className="text-blue-400" />
+        <span className="text-[8px] font-mono text-blue-300 tracking-wider">
+          {speedKB} KB/s
+        </span>
+      </div>
+      <div className="flex items-center space-x-1 mt-[1px]">
+        <div className="w-[8px] flex justify-center"><div className="w-1 h-1 rounded-full bg-gray-500"></div></div>
+        <span className="text-[8px] font-mono text-gray-400 tracking-wider">
+          {totalMB} MB Total
+        </span>
+      </div>
     </div>
   );
 };
@@ -348,7 +361,7 @@ function App() {
             </span>
           </div>
           {/* Data Rate Indicator */}
-          <BitrateIndicator isPlaying={isPlaying && !isBuffering} />
+          <DataMonitor isPlaying={isPlaying} />
         </div>
         }
 
@@ -474,7 +487,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.8.3
+          v2.8.4
         </div>
 
       </div>

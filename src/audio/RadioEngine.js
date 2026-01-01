@@ -19,6 +19,11 @@ export const radio = new class RadioEngine {
 
         this.watchdogInterval = null;
         this.onBufferingChange = null; // UI Hook
+        this.onNetworkStats = null; // New UI Hook for real data usage
+
+        // Network Stats State
+        this.lastBufferedParams = { end: 0, total: 0 };
+        this.sessionTotalBytes = 0;
 
         // Silence Detection
         this.silenceStartTime = null;
@@ -160,6 +165,56 @@ export const radio = new class RadioEngine {
                 setTimeout(() => this.play(), 100); // Re-init
             }
             */
+
+            // --- REAL NETWORK CONSUMPTION TRACKING (v2.8.4) ---
+            try {
+                // Calculate total buffered duration
+                let totalBuffered = 0;
+                const ranges = node.buffered;
+                for (let i = 0; i < ranges.length; i++) {
+                    totalBuffered += (ranges.end(i) - ranges.start(i));
+                }
+
+                // Delta = New audio downloaded this second (approx)
+                // Note: 'totalBuffered' grows as we download, but implies we have the data.
+                // However, since we play it, it might get evicted? No, usually kept until full.
+                // Better metric: 'buffered.end(ranges.length-1)' tracks the leading edge.
+
+                // Let's use the leading edge of the last buffer range
+                let leadingEdge = 0;
+                if (ranges.length > 0) {
+                    leadingEdge = ranges.end(ranges.length - 1);
+                }
+
+                // If leading edge moved 5s, we downloaded 5s of audio (burst).
+                // If it moved 1s, we downloaded 1s (steady).
+
+                let secondsDownloaded = 0;
+                if (this.lastBufferedParams.end > 0) {
+                    secondsDownloaded = leadingEdge - this.lastBufferedParams.end;
+                }
+
+                // Handling seek/reset: if negative, ignore
+                if (secondsDownloaded < 0) secondsDownloaded = 0;
+
+                // Calculate Bytes (320kbps = 40KB/s)
+                const bytesDownloaded = secondsDownloaded * 40000;
+                this.sessionTotalBytes += bytesDownloaded;
+
+                // Update State
+                this.lastBufferedParams.end = leadingEdge;
+
+                // Callback
+                if (this.onNetworkStats) {
+                    this.onNetworkStats({
+                        speed: bytesDownloaded, // Bytes per second
+                        total: this.sessionTotalBytes
+                    });
+                }
+            } catch (e) {
+                // Ignore buffer errors
+            }
+
         }, 1000);
     }
 
