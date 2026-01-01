@@ -228,8 +228,9 @@ function App() {
       // Smooth reaction for idle state
       const reaction = isPlaying && !isBuffering ? bassEnergy : 0.05;
 
-      // "Kick" Detection - Non-linear boost for visual impact
-      const kick = Math.pow(reaction, 2) * 4;
+      // "Kick" Detection - Non-linear boost for visual impact (v2.9.7 Sensitivity Boost)
+      // Power 1.5 is less punishing to low values than 2.0. Multiplier 6 ensures visibility.
+      const kick = Math.pow(reaction, 1.5) * 6;
 
       ctx.clearRect(0, 0, width, height);
 
@@ -488,7 +489,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.9.6
+          v2.9.7
         </div>
 
       </div>
