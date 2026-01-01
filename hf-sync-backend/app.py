@@ -169,11 +169,18 @@ def broadcast_stream():
             
             # DELAYED METADATA UPDATE
             # The server buffers ~20s of audio before it reaches the client.
-            # We delay the "Now Playing" update so it matches what the user hears.
             def update_meta_delayed():
                  global CURRENT_TRACK_INFO
+                 
+                 # Calculate Duration (320kbps = 40,000 bytes/sec)
+                 duration_sec = file_size / 40000
+                 
+                 # Add duration and start time to track info
+                 track['duration'] = duration_sec
+                 track['started_at'] = time.time()
+                 
                  CURRENT_TRACK_INFO = track
-                 print(f"METADATA UPDATED: {track['title']}")
+                 print(f"METADATA UPDATED: {track['title']} (Duration: {duration_sec/60:.1f}m)")
             
             # 20 second delay to match buffer latency
             threading.Timer(20.0, update_meta_delayed).start()
@@ -248,11 +255,13 @@ threading.Thread(target=broadcast_stream, daemon=True).start()
 def index():
     now_playing = {
         "title": CURRENT_TRACK_INFO.get("title", "Unknown"),
-        "artist": CURRENT_TRACK_INFO.get("artist", "SERGRadio")
+        "artist": CURRENT_TRACK_INFO.get("artist", "SERGRadio"),
+        "duration": CURRENT_TRACK_INFO.get("duration", 0),
+        "started_at": CURRENT_TRACK_INFO.get("started_at", 0)
     }
     return {
         "status": "radio_active",
-        "version": "2.8.2",
+        "version": "2.8.3",
         "mode": "local_file_streaming",
         "quality": "320kbps CBR",
         "listeners": len(CLIENTS),

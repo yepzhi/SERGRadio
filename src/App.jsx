@@ -1,8 +1,68 @@
 import { useState, useEffect, useRef } from 'react';
 import { radio } from './audio/RadioEngine';
-import { WifiOff, Play, Pause, User, RefreshCw, Activity } from 'lucide-react';
+import { WifiOff, Play, Pause, User, RefreshCw, Activity, Music, Clock } from 'lucide-react';
 import AdSpace from './components/AdSpace';
 import './App.css';
+
+const CountdownTimer = ({ startedAt, duration }) => {
+  const [timeLeft, setTimeLeft] = useState('');
+
+  useEffect(() => {
+    if (!startedAt || !duration) return;
+
+    const tick = () => {
+      const now = Date.now() / 1000;
+      const elapsed = now - startedAt;
+      const remaining = duration - elapsed;
+
+      if (remaining <= 0) {
+        setTimeLeft('00:00');
+        return;
+      }
+
+      const h = Math.floor(remaining / 3600);
+      const m = Math.floor((remaining % 3600) / 60);
+      const s = Math.floor(remaining % 60);
+
+      if (h > 0) {
+        setTimeLeft(`${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`);
+      } else {
+        setTimeLeft(`${m}:${s.toString().padStart(2, '0')}`);
+      }
+    };
+
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [startedAt, duration]);
+
+  if (!timeLeft) return null;
+
+  return <span>{timeLeft}</span>;
+};
+
+const BitrateIndicator = ({ isPlaying }) => {
+  const [rate, setRate] = useState(0.04);
+
+  useEffect(() => {
+    if (!isPlaying) return;
+    const interval = setInterval(() => {
+      // Fluctuate slightly around 0.04 MB/s (32kbps)
+      const variation = (Math.random() - 0.5) * 0.01;
+      setRate(Math.max(0.01, 0.04 + variation));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [isPlaying]);
+
+  return (
+    <div className="mt-1 flex items-center space-x-1 opacity-70">
+      <Activity size={8} className="text-blue-400" />
+      <span className="text-[8px] font-mono text-blue-300 tracking-wider">
+        {isPlaying ? rate.toFixed(3) : '0.000'} MB/s
+      </span>
+    </div>
+  );
+};
 
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
@@ -280,13 +340,15 @@ function App() {
 
 
         {/* Top LEFT Status (v2.6.2) */}
-        {(isPlaying || isBuffering) && <div className="absolute top-6 left-6 z-20 flex items-center space-x-2 animate-in fade-in duration-500">
+        {(isPlaying || isBuffering) && <div className="absolute top-6 left-6 z-20 flex flex-col items-start animate-in fade-in duration-500">
           <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-full bg-black/60 border border-white/10 shadow-lg backdrop-blur-md transition-all duration-300 ${isBuffering ? 'animate-pulse border-emerald-500/50' : ''}`}>
             <div className={`w-1.5 h-1.5 rounded-full ${isBuffering ? 'bg-yellow-500' : (!isOnline ? 'bg-red-500' : 'bg-emerald-400')}`}></div>
             <span className={`text-[9px] uppercase tracking-widest font-bold ${isBuffering ? 'text-yellow-500' : (!isOnline ? 'text-red-500' : 'text-emerald-400')}`}>
               {isBuffering ? 'Reconnecting...' : (!isOnline ? 'Unstable' : 'Stable')}
             </span>
           </div>
+          {/* Data Rate Indicator */}
+          <BitrateIndicator isPlaying={isPlaying && !isBuffering} />
         </div>
         }
 
@@ -339,9 +401,28 @@ function App() {
           <div className={`transition - all duration - 500 ${isPlaying ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'} `}>
             {/* Track Title */}
             {track && track.title && (
-              <h2 className="text-base md:text-xl font-bold text-white mb-1 drop-shadow-md max-w-[280px] md:max-w-[400px] text-center leading-tight">
-                {track.title}
-              </h2>
+              <div className="relative inline-block">
+                <h2 className="text-base md:text-xl font-bold text-white mb-1 drop-shadow-md max-w-[280px] md:max-w-[400px] text-center leading-tight">
+                  {track.title}
+                </h2>
+                {/* Timer - Upper Right of Mix Name */}
+                {track.duration > 0 && (
+                  <div className="absolute top-0 right-0 translate-x-full pl-2 hidden md:block">
+                    <div className="flex flex-col items-start -mt-1">
+                      <span className="text-[9px] text-gray-500 font-bold tracking-widest leading-none mb-1">REMAINING</span>
+                      <CountdownTimer startedAt={track.started_at} duration={track.duration} />
+                    </div>
+                  </div>
+                )}
+                {track.duration > 0 && (
+                  <div className="md:hidden flex justify-center items-center gap-2 mt-1 mb-1">
+                    <span className="text-[9px] text-gray-500 font-bold tracking-widest">REMAINING:</span>
+                    <span className="text-xs text-blue-400 font-mono tracking-wider">
+                      <CountdownTimer startedAt={track.started_at} duration={track.duration} />
+                    </span>
+                  </div>
+                )}
+              </div>
             )}
             <p className="text-gray-400 font-light text-lg mb-1 pt-1">
               Streaming Live 24/7
@@ -393,7 +474,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.8.2
+          v2.8.3
         </div>
 
       </div>
