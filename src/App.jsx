@@ -387,7 +387,7 @@ function App() {
           {/* Timer - Force Right Side (v2.8.7) */}
           {track && track.duration > 0 && (
             <div className="flex flex-col items-end mt-2 opacity-80">
-              <span className="text-[8px] text-gray-500 font-bold tracking-wider">This mix ends in:</span>
+              <span className="text-[8px] text-gray-500 font-bold tracking-wider">Ends in:</span>
               <span className="text-[8px] text-blue-400 font-mono tracking-wider">
                 <CountdownTimer startedAt={track.started_at} duration={track.duration} />
               </span>
@@ -482,7 +482,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.8.7
+          v2.8.8
         </div>
 
       </div>
