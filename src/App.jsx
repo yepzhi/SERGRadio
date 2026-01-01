@@ -417,8 +417,8 @@ function App() {
               <div className="relative inline-block flex flex-col items-center">
                 {/* Timer - Above Song Name (Lower Right of Play Button roughly) */}
                 {track.duration > 0 && (
-                  <div className="flex items-center space-x-1 mb-1 opacity-80">
-                    <span className="text-[8px] text-gray-500 font-bold tracking-wider">Remaining</span>
+                  <div className="flex items-center space-x-1 mb-1 opacity-80 self-end">
+                    <span className="text-[8px] text-gray-500 font-bold tracking-wider">This mix ends in:</span>
                     <span className="text-[8px] text-blue-400 font-mono tracking-wider">
                       <CountdownTimer startedAt={track.started_at} duration={track.duration} />
                     </span>
@@ -480,7 +480,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.8.5
+          v2.8.6
         </div>
 
       </div>
