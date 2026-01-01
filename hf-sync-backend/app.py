@@ -225,6 +225,7 @@ def broadcast_stream():
                 '-bufsize', '8192k',  # Large buffer for smooth output
                 '-ac', '2',
                 '-ar', '44100',
+                '-af', 'treble=g=4', # Boost Presence (+4dB) to fix "Muddy" sound
                 '-loglevel', 'error',
                 'pipe:1'
             ]
@@ -288,7 +289,7 @@ def index():
     }
     return {
         "status": "radio_active",
-        "version": "2.9.3",
+        "version": "2.9.4",
         "mode": "local_file_streaming",
         "quality": "320kbps CBR",
         "listeners": len(CLIENTS),
