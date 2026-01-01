@@ -56,8 +56,8 @@ const DataMonitor = ({ isPlaying }) => {
 
   // Format Speed: Bytes -> KB/s
   const speedKB = (stats.speed / 1024).toFixed(0);
-  // Format Total: Bytes -> MB
-  const totalMB = (stats.total / (1024 * 1024)).toFixed(2);
+  // Format Total: Bytes -> MB (No decimals)
+  const totalMB = (stats.total / (1024 * 1024)).toFixed(0);
 
   return (
     <div className="mt-1 flex flex-col items-start opacity-70">
@@ -70,7 +70,7 @@ const DataMonitor = ({ isPlaying }) => {
       <div className="flex items-center space-x-1 mt-[1px]">
         <div className="w-[8px] flex justify-center"><div className="w-1 h-1 rounded-full bg-gray-500"></div></div>
         <span className="text-[8px] font-mono text-gray-400 tracking-wider">
-          {totalMB} MB Total
+          {totalMB} MB TOT
         </span>
       </div>
     </div>
@@ -414,27 +414,20 @@ function App() {
           <div className={`transition - all duration - 500 ${isPlaying ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-2'} `}>
             {/* Track Title */}
             {track && track.title && (
-              <div className="relative inline-block">
-                <h2 className="text-base md:text-xl font-bold text-white mb-1 drop-shadow-md max-w-[280px] md:max-w-[400px] text-center leading-tight">
-                  {track.title}
-                </h2>
-                {/* Timer - Upper Right of Mix Name */}
+              <div className="relative inline-block flex flex-col items-center">
+                {/* Timer - Above Song Name (Lower Right of Play Button roughly) */}
                 {track.duration > 0 && (
-                  <div className="absolute top-0 right-0 translate-x-full pl-2 hidden md:block">
-                    <div className="flex flex-col items-start -mt-1">
-                      <span className="text-[9px] text-gray-500 font-bold tracking-widest leading-none mb-1">REMAINING</span>
-                      <CountdownTimer startedAt={track.started_at} duration={track.duration} />
-                    </div>
-                  </div>
-                )}
-                {track.duration > 0 && (
-                  <div className="md:hidden flex justify-center items-center gap-2 mt-1 mb-1">
-                    <span className="text-[9px] text-gray-500 font-bold tracking-widest">REMAINING:</span>
-                    <span className="text-xs text-blue-400 font-mono tracking-wider">
+                  <div className="flex items-center space-x-1 mb-1 opacity-80">
+                    <span className="text-[8px] text-gray-500 font-bold tracking-wider">Remaining</span>
+                    <span className="text-[8px] text-blue-400 font-mono tracking-wider">
                       <CountdownTimer startedAt={track.started_at} duration={track.duration} />
                     </span>
                   </div>
                 )}
+
+                <h2 className="text-base md:text-xl font-bold text-white mb-1 drop-shadow-md max-w-[280px] md:max-w-[400px] text-center leading-tight">
+                  {track.title}
+                </h2>
               </div>
             )}
             <p className="text-gray-400 font-light text-lg mb-1 pt-1">
@@ -487,7 +480,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.8.4
+          v2.8.5
         </div>
 
       </div>
