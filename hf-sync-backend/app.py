@@ -5,6 +5,7 @@ import random
 import json
 from urllib.parse import quote
 import subprocess
+import requests
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -24,24 +25,30 @@ app.add_middleware(
 
 # Configuration
 BASE_URL = "https://huggingface.co/spaces/yepzhi/sergradio-sync/resolve/main/tracks/"
+TRACKS_DIR = "tracks"
+os.makedirs(TRACKS_DIR, exist_ok=True)
 
 # Playlist: DJ Mixes (Hosted on Hugging Face Spaces)
 PLAYLIST = [
-    {"id": "m1", "title": "Doble B Sat 9 Feb Rec 1", "artist": "Serg", "file": "DOBLE B SAT 9 FEB Rec 1 by SERG.mp3", "weight": 1},
-    {"id": "m2", "title": "Doble B Sat 9 Feb Rec 2", "artist": "Serg", "file": "DOBLE B SAT 9 FEB Rec 2 by SERG.mp3", "weight": 1},
-    {"id": "m3", "title": "Everywhere (Serg Edit)", "artist": "Serg", "file": "EVERYWHERE(SERG EDIT).mp3", "weight": 1},
-    {"id": "m4", "title": "Mirrey", "artist": "Serg", "file": "MIRREY by SERG.mp3", "weight": 1},
-    {"id": "m5", "title": "Republica De San Pedro", "artist": "Serg", "file": "SERG @REPUBLICA DE SAN PEDRO.mp3", "weight": 1},
-    {"id": "m6", "title": "Backroom Hermosillo", "artist": "Serg", "file": "Serg @Backroom HMO.mp3", "weight": 1},
-    {"id": "m7", "title": "Serg Minimix v1", "artist": "Serg", "file": "Serg Minimix v1.mp3", "weight": 1},
-    {"id": "m8", "title": "Thursdays At The Decks", "artist": "Serg", "file": "Thursdays At The Decks With Serg.mp3", "weight": 1},
-    {"id": "m9", "title": "Up In The Club With My Homies", "artist": "Serg", "file": "UP IN THE CLUB WITH MY HOMIES.mp3", "weight": 1},
+    {"id": "m1", "title": "Doble B Sat 9 Feb Rec 1", "artist": "Serg", "file": "DOBLE B SAT 9 FEB Rec 1 by SERG.mp3"},
+    {"id": "m2", "title": "Doble B Sat 9 Feb Rec 2", "artist": "Serg", "file": "DOBLE B SAT 9 FEB Rec 2 by SERG.mp3"},
+    {"id": "m3", "title": "Everywhere (Serg Edit)", "artist": "Serg", "file": "EVERYWHERE(SERG EDIT).mp3"},
+    {"id": "m4", "title": "Mirrey", "artist": "Serg", "file": "MIRREY by SERG.mp3"},
+    {"id": "m5", "title": "Republica De San Pedro", "artist": "Serg", "file": "SERG @REPUBLICA DE SAN PEDRO.mp3"},
+    {"id": "m6", "title": "Backroom Hermosillo", "artist": "Serg", "file": "Serg @Backroom HMO.mp3"},
+    {"id": "m7", "title": "Serg Minimix v1", "artist": "Serg", "file": "Serg Minimix v1.mp3"},
+    {"id": "m8", "title": "Thursdays At The Decks", "artist": "Serg", "file": "Thursdays At The Decks With Serg.mp3"},
+    {"id": "m9", "title": "Up In The Club With My Homies", "artist": "Serg", "file": "UP IN THE CLUB WITH MY HOMIES.mp3"},
 ]
 
 # Global State
 CLIENTS = []
-BURST_BUFFER = deque(maxlen=100)  # ~40 seconds of audio for burst-on-connect
+# BURST_BUFFER: Pre-fills new clients for instant playback (~100 seconds)
+BURST_BUFFER = deque(maxlen=250)
 CURRENT_TRACK_INFO = {"title": "Connecting...", "artist": "SERGRadio"}
+
+# Track Queue for pre-downloaded files
+READY_TRACKS = Queue(maxsize=3)
 
 # Track Shuffle Bag (Even Distribution)
 SHUFFLE_BAG = []
@@ -51,176 +58,209 @@ def select_next_track():
     """Select next track using shuffle bag for even distribution"""
     global SHUFFLE_BAG
     if not SHUFFLE_BAG:
-        # Try Load State
         if os.path.exists(STATE_FILE):
             try:
                 with open(STATE_FILE, 'r') as f:
                     SHUFFLE_BAG = json.load(f)
-                print(f"Loaded Shuffle Bag from state: {len(SHUFFLE_BAG)} items")
-            except Exception as e:
-                print(f"Failed to load shuffle state: {e}")
+                print(f"Loaded Shuffle Bag: {len(SHUFFLE_BAG)} items")
+            except:
+                pass
         
-        # If still empty, refill
         if not SHUFFLE_BAG:
             SHUFFLE_BAG = list(PLAYLIST)
             random.shuffle(SHUFFLE_BAG)
-            print("Refilled Shuffle Bag (Fresh)")
+            print("Refilled Shuffle Bag")
 
-    # Pop track
     if not SHUFFLE_BAG:
         return random.choice(PLAYLIST)
 
     track = SHUFFLE_BAG.pop()
     
-    # Save State
     try:
         with open(STATE_FILE, 'w') as f:
             json.dump(SHUFFLE_BAG, f)
-    except Exception as e:
-        print(f"Failed to save shuffle state: {e}")
+    except:
+        pass
     
     return track
 
-def get_track_url(track):
-    """Build full URL for track with proper encoding"""
-    encoded_filename = quote(track['file'])
-    return f"{BASE_URL}{encoded_filename}"
+def download_track(filename):
+    """Download track from HF to local cache"""
+    encoded_filename = quote(filename)
+    url = f"{BASE_URL}{encoded_filename}"
+    local_path = os.path.join(TRACKS_DIR, filename)
+    
+    # Check cache (file exists and > 1MB)
+    if os.path.exists(local_path) and os.path.getsize(local_path) > 1024 * 1024:
+        print(f"Cache hit: {filename}")
+        return local_path
+    
+    print(f"Downloading: {filename}...")
+    try:
+        headers = {}
+        token = os.environ.get("HF_TOKEN")
+        if token:
+            headers["Authorization"] = f"Bearer {token}"
+        
+        # Stream download with long timeout
+        r = requests.get(url, stream=True, timeout=7200, headers=headers)
+        if r.status_code == 200:
+            with open(local_path, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=65536):
+                    f.write(chunk)
+            size_mb = os.path.getsize(local_path) / (1024 * 1024)
+            print(f"Downloaded: {filename} ({size_mb:.1f} MB)")
+            return local_path
+        else:
+            print(f"Download failed: {r.status_code}")
+    except Exception as e:
+        print(f"Download error: {e}")
+    return None
 
-# Broadcast Thread - Direct HTTP Streaming via FFmpeg
+def track_manager():
+    """Background thread to keep READY_TRACKS queue filled"""
+    print("Track Manager started")
+    while True:
+        try:
+            if not READY_TRACKS.full():
+                track = select_next_track()
+                path = download_track(track['file'])
+                if path:
+                    READY_TRACKS.put({'track': track, 'path': path})
+                    print(f"Queued: {track['title']}")
+                else:
+                    time.sleep(5)  # Retry delay
+            else:
+                time.sleep(1)
+        except Exception as e:
+            print(f"Track Manager error: {e}")
+            time.sleep(2)
+
 def broadcast_stream():
-    """
-    Stream audio directly from HF URLs via FFmpeg.
-    No pre-download required - FFmpeg fetches chunks as needed.
-    Perfect for 3-hour mixes!
-    """
+    """Main broadcast loop - plays from local files for reliability"""
     global CURRENT_TRACK_INFO
-    print("Starting Direct HTTP Streaming Broadcast...")
+    print("Broadcast started (Local File Mode)")
     
-    CHUNK_SIZE = 16384  # 16KB chunks
-    
-    # Get HF Token for authenticated requests
-    hf_token = os.environ.get("HF_TOKEN", "")
+    CHUNK_SIZE = 16384
     
     while True:
         try:
-            # Select next track
-            track = select_next_track()
-            track_url = get_track_url(track)
+            # Wait for next ready track
+            print("Waiting for next track...")
+            item = READY_TRACKS.get()
+            track = item['track']
+            local_path = item['path']
             
-            print(f"Now Playing: {track['title']}")
-            print(f"Streaming from: {track_url}")
+            # Verify file exists and is valid
+            if not os.path.exists(local_path):
+                print(f"File missing: {local_path}")
+                continue
+                
+            file_size = os.path.getsize(local_path)
+            if file_size < 1024 * 1024:  # Less than 1MB = probably corrupt
+                print(f"File too small, skipping: {local_path}")
+                os.remove(local_path)  # Remove corrupt file
+                continue
+            
+            print(f"NOW PLAYING: {track['title']} ({file_size / (1024*1024):.1f} MB)")
             CURRENT_TRACK_INFO = track
             
-            # FFmpeg Command with HTTP input
-            # -re: Real-time playback speed (critical for live streaming)
-            # -reconnect: Auto-reconnect on network issues
-            # -rw_timeout: Read/Write timeout in microseconds (30 seconds)
+            # FFmpeg command for local file playback
             cmd = [
                 'ffmpeg',
-                '-reconnect', '1',
-                '-reconnect_streamed', '1', 
-                '-reconnect_delay_max', '10',
-                '-rw_timeout', '30000000',  # 30 second timeout
-            ]
-            
-            # Add auth header if token available
-            if hf_token:
-                cmd.extend(['-headers', f'Authorization: Bearer {hf_token}\r\n'])
-            
-            cmd.extend([
-                '-re',  # Real-time playback speed
-                '-i', track_url,
-                '-vn',  # No video
-                # NOTE: silenceremove removed - causes issues with HTTP streaming
+                '-re',  # Real-time playback
+                '-i', local_path,
+                '-vn',
                 '-f', 'mp3',
                 '-b:a', '320k',
-                '-bufsize', '2048k',  # Larger buffer for stability
+                '-bufsize', '4096k',
                 '-ac', '2',
                 '-ar', '44100',
-                '-loglevel', 'warning',
+                '-loglevel', 'error',
                 'pipe:1'
-            ])
+            ]
             
-            # Start FFmpeg process
             process = subprocess.Popen(
-                cmd, 
-                stdout=subprocess.PIPE, 
+                cmd,
+                stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE
             )
             
-            # Stream chunks to clients
+            bytes_streamed = 0
+            start_time = time.time()
+            
             while True:
                 chunk = process.stdout.read(CHUNK_SIZE)
                 if not chunk:
-                    # Check for errors
                     stderr = process.stderr.read()
                     if stderr:
-                        print(f"FFmpeg stderr: {stderr.decode()[:500]}")
+                        print(f"FFmpeg: {stderr.decode()[:200]}")
                     break
                 
-                # Update Burst Buffer (for new client quick-start)
+                bytes_streamed += len(chunk)
                 BURST_BUFFER.append(chunk)
-
-                # Broadcast to all connected clients
+                
                 dead_clients = []
                 for q in CLIENTS:
                     try:
                         if q.full():
                             try:
-                                q.get_nowait()  # Drop oldest chunk
+                                q.get_nowait()
                             except Empty:
                                 pass
                         q.put_nowait(chunk)
-                    except Exception:
+                    except:
                         dead_clients.append(q)
                 
-                # Cleanup disconnected clients
                 for q in dead_clients:
                     if q in CLIENTS:
                         CLIENTS.remove(q)
             
             process.wait()
-            print(f"Track finished: {track['title']}")
+            
+            duration = time.time() - start_time
+            print(f"FINISHED: {track['title']} - {bytes_streamed/(1024*1024):.1f}MB in {duration/60:.1f} min")
             
         except Exception as e:
-            print(f"Streaming error: {e}")
+            print(f"Broadcast error: {e}")
             time.sleep(2)
 
-# Start Broadcast Thread
+# Start Background Threads
+threading.Thread(target=track_manager, daemon=True).start()
 threading.Thread(target=broadcast_stream, daemon=True).start()
 
 @app.get("/")
 def index():
-    # Clean response - only expose relevant info
     now_playing = {
         "title": CURRENT_TRACK_INFO.get("title", "Unknown"),
         "artist": CURRENT_TRACK_INFO.get("artist", "SERGRadio")
     }
     return {
-        "status": "radio_active", 
-        "version": "2.7.0",
-        "mode": "direct_http_streaming",
+        "status": "radio_active",
+        "version": "2.7.2",
+        "mode": "local_file_streaming",
         "quality": "320kbps CBR",
         "listeners": len(CLIENTS),
+        "queue_size": READY_TRACKS.qsize(),
         "now_playing": now_playing
     }
 
 @app.get("/stream")
 def stream_audio():
     def event_stream():
-        # Large queue to absorb network jitters
-        q = Queue(maxsize=500) 
+        # Large queue for maximum stability (~6-7 min buffer)
+        q = Queue(maxsize=1000)
         
-        # BURST: Pre-fill with recent audio for instant playback
+        # Burst-fill with recent audio
         backlog = list(BURST_BUFFER)
         for chunk in backlog:
             try:
                 q.put_nowait(chunk)
             except Full:
                 break
-                
+        
         CLIENTS.append(q)
-        print(f"Client connected. Burst: {len(backlog)} chunks. Total listeners: {len(CLIENTS)}")
+        print(f"Client connected. Burst: {len(backlog)}. Listeners: {len(CLIENTS)}")
         
         try:
             while True:
@@ -232,7 +272,6 @@ def stream_audio():
             if q in CLIENTS:
                 CLIENTS.remove(q)
 
-    # Headers to prevent caching and enable streaming
     headers = {
         "Cache-Control": "no-cache, no-store, must-revalidate",
         "Pragma": "no-cache",
