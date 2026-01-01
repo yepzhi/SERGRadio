@@ -486,7 +486,7 @@ function App() {
           </a>
         </div>
         <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.8.9
+          v2.9.0
         </div>
 
       </div>

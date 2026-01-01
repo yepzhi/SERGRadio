@@ -56,10 +56,11 @@ READY_TRACKS = Queue(maxsize=3)
 # Track Shuffle Bag (Even Distribution)
 SHUFFLE_BAG = []
 STATE_FILE = "shuffle_state.json"
+LAST_PLAYED_ID = None
 
 def select_next_track():
-    """Select next track using shuffle bag for even distribution"""
-    global SHUFFLE_BAG
+    """Select next track using shuffle bag for even distribution, preventing immediate repeats"""
+    global SHUFFLE_BAG, LAST_PLAYED_ID
     if not SHUFFLE_BAG:
         if os.path.exists(STATE_FILE):
             try:
@@ -77,7 +78,24 @@ def select_next_track():
     if not SHUFFLE_BAG:
         return random.choice(PLAYLIST)
 
+    # Smart Shuffle: Check if next track is same as last played
+    # If so, and we have alternatives, swap it!
+    if LAST_PLAYED_ID and len(SHUFFLE_BAG) > 0:
+        if SHUFFLE_BAG[-1]['id'] == LAST_PLAYED_ID:
+            if len(SHUFFLE_BAG) > 1:
+                # Swap with a random other track in the bag
+                swap_idx = random.randint(0, len(SHUFFLE_BAG) - 2)
+                print(f"Shuffle: Avoiding repeat of {LAST_PLAYED_ID}, swapping with index {swap_idx}")
+                SHUFFLE_BAG[-1], SHUFFLE_BAG[swap_idx] = SHUFFLE_BAG[swap_idx], SHUFFLE_BAG[-1]
+            else:
+                 # Only 1 track in bag and it's the same... 
+                 # If Playlist has > 1 item, we might be unlucky (bag end -> refill -> same start).
+                 # But we just refilled! Refill logic handles shuffle.
+                 # Let's just shuffle the new bag again if start matches?
+                 pass
+
     track = SHUFFLE_BAG.pop()
+    LAST_PLAYED_ID = track['id']
     
     try:
         with open(STATE_FILE, 'w') as f:
@@ -132,7 +150,8 @@ def track_manager():
                     READY_TRACKS.put({'track': track, 'path': path})
                     print(f"Queued: {track['title']}")
                 else:
-                    time.sleep(5)  # Retry delay
+                    print(f"Failed to load: {track['title']}, skipping...")
+                    time.sleep(0.5)  # Fast retry to find next valid track
             else:
                 time.sleep(1)
         except Exception as e:
@@ -261,12 +280,13 @@ def index():
     }
     return {
         "status": "radio_active",
-        "version": "2.8.9",
+        "version": "2.9.0",
         "mode": "local_file_streaming",
         "quality": "320kbps CBR",
         "listeners": len(CLIENTS),
         "queue_size": READY_TRACKS.qsize(),
-        "now_playing": now_playing
+        "now_playing": now_playing,
+        "playlist": [t['title'] for t in PLAYLIST] # Expose bag of songs
     }
 
 @app.get("/stream")
