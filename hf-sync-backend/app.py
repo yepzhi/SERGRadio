@@ -320,12 +320,16 @@ def stream_audio():
                 CLIENTS.remove(q)
 
     # Headers to prevent buffering AND Enable CORS for AudioContext
+    # Enhanced for v2.6.7 to prevent Browser Caching of Live Stream
     headers = {
-        "Cache-Control": "no-cache",
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+        "Pragma": "no-cache",
+        "Expires": "0",
         "X-Accel-Buffering": "no",
         "Connection": "keep-alive",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Expose-Headers": "*",
+        "X-Content-Type-Options": "nosniff"
     }
     
     return StreamingResponse(event_stream(), media_type="audio/mpeg", headers=headers)
