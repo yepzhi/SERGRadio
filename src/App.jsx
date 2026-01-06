@@ -475,7 +475,7 @@ function App() {
 
       {/* Cross Link: hopRadio */}
       <div className="w-full flex justify-center mb-4 pointer-events-auto z-30">
-        <a href="https://yepzhi.com/hopRadio/" className="group relative px-6 py-2.5 bg-black/40 backdrop-blur-xl border border-red-900/50 rounded-full flex items-center gap-3 hover:bg-black/80 transition-all hover:scale-105 hover:shadow-[0_0_25px_rgba(255,0,0,0.3)]">
+        <a href="https://yepzhi.com/hopRadio/" className="group relative px-6 py-2.5 bg-black/40 backdrop-blur-xl border border-red-900/50 rounded-full flex items-center gap-3 hover:bg-black/80 transition-all hover:scale-105 hover:shadow-[0_0_60px_rgba(220,38,38,0.6)]">
           <span className="text-xs text-gray-400 uppercase tracking-widest font-semibold group-hover:text-gray-300">Listen</span>
           <span className="text-xl font-black tracking-tight"><span className="text-[#fbbf24] drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]">hop</span><span className="text-red-500 drop-shadow-[0_0_8px_rgba(255,0,0,0.8)]">Radio</span></span>
           <svg className="w-5 h-5 text-gray-400 group-hover:text-white transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
@@ -509,10 +509,7 @@ function App() {
       {/* Footer (Centered + Merged Legal) */}
       <div className="w-full max-w-[450px] flex flex-col items-center gap-4 mt-8 pb-6 z-20 pointer-events-auto">
 
-        {/* Invest Button (Restored) */}
-        <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="w-full max-w-[300px] px-4 py-2 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-gray-500 hover:text-gray-300 hover:border-gray-700 transition-all text-[10px] font-medium block text-center leading-tight shadow-lg backdrop-blur-md">
-          Do you like this? 💙 <span className="font-bold text-gray-400 group-hover:text-white">Lets make this a real radio 📡</span>
-        </a>
+        
 
         {/* Legal Text & Credits (Merged) */}
         <div className="text-center mt-2 px-4 opacity-60 hover:opacity-100 transition-opacity duration-300">
@@ -530,7 +527,7 @@ function App() {
 
           <div className="flex flex-col items-center gap-1">
             <p className="text-[9px] text-gray-600 leading-relaxed max-w-sm mx-auto">
-              v3.0.6, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
+              v3.0.7, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
               <br />
               hopRadio/SERGRadio are property of @yepzhi. All Rights Reserved 2025.
               <br />
