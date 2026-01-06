@@ -45,9 +45,9 @@ export const radio = new class RadioEngine {
         const saved = localStorage.getItem('serg_quality');
         if (saved) {
             this.currentQuality = saved;
-        } else if (navigator.connection && (navigator.connection.saveData || navigator.connection.effectiveType === '2g' || navigator.connection.effectiveType === '3g')) {
+        } else if (navigator.connection && (navigator.connection.saveData || navigator.connection.type === 'cellular' || navigator.connection.effectiveType === '2g' || navigator.connection.effectiveType === '3g')) {
             this.currentQuality = '192';
-            console.log("Auto-switched to Data Saver (192kbps)");
+            console.log("Auto-switched to Data Saver (192kbps) - Cellular/Slow Network Detected");
         }
 
         // Initial fake metadata

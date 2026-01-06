@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { radio } from './audio/RadioEngine';
-import { WifiOff, Play, Pause, User, RefreshCw, Activity, Music, Clock } from 'lucide-react';
+import { Play, Pause, User, RefreshCw, WifiOff, Info } from 'lucide-react';
 import AdSpace from './components/AdSpace';
 import './App.css';
 
@@ -85,6 +85,7 @@ function App() {
   const [isOnline, setIsOnline] = useState(true);
   const [quality, setQuality] = useState(radio.currentQuality || '320'); // Track quality state
   const [isReady, setIsReady] = useState(false); // Radio ready state
+  const [showInfo, setShowInfo] = useState(false); // Info Modal State
 
   // PWA State removed
 
@@ -387,17 +388,28 @@ function App() {
           </button>
         )}
 
-        {/* Quality Toggle (Bottom Right - Mirroring Refresh) */}
+        {/* Quality Toggle & Info (Mirroring Refresh) */}
         {(isPlaying || isBuffering) && (
-          <button
-            onClick={toggleQuality}
-            className="absolute bottom-6 right-6 z-20 px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 text-[9px] font-bold text-gray-400 hover:text-white border border-white/5 hover:border-white/20 shadow-lg backdrop-blur-md transition-all active:scale-95 uppercase tracking-wider flex items-center gap-2"
-            title="Switch Audio Quality"
-          >
-            <span className={quality === '320' ? 'text-blue-400' : 'text-gray-600'}>320k</span>
-            <span className="text-gray-600">|</span>
-            <span className={quality === '192' ? 'text-emerald-400' : 'text-gray-600'}>192k</span>
-          </button>
+          <div className="absolute bottom-6 right-6 z-20 flex items-center gap-2">
+
+            {/* Info Button */}
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowInfo(true); }}
+              className="p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-gray-400 hover:text-white border border-white/5 hover:border-white/20 backdrop-blur-md transition-all active:scale-95"
+            >
+              <Info size={12} />
+            </button>
+
+            <button
+              onClick={toggleQuality}
+              className="px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 text-[9px] font-bold text-gray-400 hover:text-white border border-white/5 hover:border-white/20 shadow-lg backdrop-blur-md transition-all active:scale-95 uppercase tracking-wider flex items-center gap-2"
+              title="Switch Audio Quality"
+            >
+              <span className={quality === '320' ? 'text-blue-400' : 'text-gray-600'}>320k</span>
+              <span className="text-gray-600">|</span>
+              <span className={quality === '192' ? 'text-emerald-400' : 'text-gray-600'}>192k</span>
+            </button>
+          </div>
         )}
 
         {/* Top Right Status & Logo */}
@@ -493,18 +505,58 @@ function App() {
 
 
 
-      {/* Footer / Disclaimer */}
-      <div className="mt-12 mb-4 text-center max-w-2xl px-6 opacity-60 hover:opacity-100 transition-opacity duration-500">
-        <p className="text-[10px] text-gray-500 font-medium leading-relaxed">
-          Made by <span className="text-gray-400">@yepzhi</span>, design and music selection for hopRadio. SERGRadio mixes by <span className="text-gray-400">@SERG</span>.
-        </p>
-        <p className="text-[9px] text-gray-600 mt-2 leading-relaxed">
-          This radio station consumes <span className="text-gray-500">140MB/hour</span> at maximum lossless audio (320kbps) and <span className="text-gray-500">84MB/hour</span> at normal quality (192kbps).
-          EQ settings applied to improve quality audio for listeners. We don't play what you want, we play what you need.
-        </p>
-        <p className="text-[9px] text-gray-600 mt-1 uppercase tracking-widest">
-          hopRadio/SERGRadio are property of @yepzhi, All Rights Reserved 2025 • v3.0.0
-        </p>
+      {/* Info Modal */}
+      {showInfo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200" onClick={() => setShowInfo(false)}>
+          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl relative" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setShowInfo(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2"><Info size={20} className="text-blue-500" /> Audio Quality</h3>
+
+            <div className="space-y-4 text-sm text-gray-300">
+              <div className="p-3 bg-black/30 rounded-lg border border-gray-800">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-bold text-blue-400">HQ (320kbps)</span>
+                  <span className="text-xs text-gray-500">~140 MB/hr</span>
+                </div>
+                <p className="text-xs text-gray-500">Maximum fidelity. Best for WiFi or Unlimited Data.</p>
+              </div>
+
+              <div className="p-3 bg-black/30 rounded-lg border border-gray-800">
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-bold text-emerald-400">ECO (192kbps)</span>
+                  <span className="text-xs text-gray-500">~84 MB/hr</span>
+                </div>
+                <p className="text-xs text-gray-500">Data saver mode. Auto-selected on mobile networks.</p>
+              </div>
+
+              <p className="text-[10px] text-gray-500 pt-2 italic text-center">
+                * App automatically detects network type on startup. Your manual selection is saved.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Footer (Restored Old + Merged Legal) */}
+      <div className="absolute bottom-4 right-6 z-20 pointer-events-none flex flex-col items-end gap-1">
+        <div className="pointer-events-auto flex items-center gap-2">
+          <span className="text-gray-500 text-[10px] tracking-wide font-medium mr-1">Mixes by</span>
+          <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm text-[10px]">
+            @SERG
+          </a>
+          <span className="text-gray-700 mx-1">•</span>
+          <span className="text-gray-500 text-[10px] tracking-wide font-medium mr-1">Site by</span>
+          <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm text-[10px]">
+            @yepzhi
+          </a>
+        </div>
+
+        {/* Version & Short Legal */}
+        <div className="flex flex-col items-end opacity-60">
+          <span className="text-gray-600 text-[9px] font-mono tracking-widest">v3.0.0 • All Rights Reserved 2025</span>
+          <span className="text-[8px] text-gray-700 mt-0.5">We don't play what you want, we play what you need.</span>
+        </div>
+
       </div>
 
 
