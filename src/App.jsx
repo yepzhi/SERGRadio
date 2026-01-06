@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { radio } from './audio/RadioEngine';
-import { Play, Pause, User, RefreshCw, WifiOff, Info } from 'lucide-react';
+import { Play, Pause, User, RefreshCw, WifiOff, Info, Activity } from 'lucide-react';
 import AdSpace from './components/AdSpace';
 import './App.css';
 
