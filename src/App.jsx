@@ -389,34 +389,7 @@ function App() {
         )}
 
         {/* Quality Toggle & Info (Mirroring Refresh) */}
-        {/* Quality Toggle & Info (Mirroring Refresh) */}
-        {(isPlaying || isBuffering) && (
-          <div className="absolute bottom-6 right-6 z-20 flex items-center gap-2">
 
-            {/* Toggle */}
-            <button
-              onClick={toggleQuality}
-              className="px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 text-[9px] font-bold text-gray-400 hover:text-white border border-white/5 hover:border-white/20 shadow-lg backdrop-blur-md transition-all active:scale-95 uppercase tracking-wider flex items-center gap-2"
-              title="Switch Audio Quality"
-            >
-              <span className={quality === '320' ? 'text-blue-400' : 'text-gray-600'}>HQ</span>
-              <span className="text-gray-600">/</span>
-              <span className={quality === '192' ? 'text-emerald-400' : 'text-gray-600'}>ECO</span>
-            </button>
-
-            {/* Info Button (Press-to-Hold) */}
-            <button
-              onMouseDown={(e) => { e.stopPropagation(); setShowInfo(true); }}
-              onMouseUp={(e) => { e.stopPropagation(); setShowInfo(false); }}
-              onMouseLeave={(e) => { e.stopPropagation(); setShowInfo(false); }}
-              onTouchStart={(e) => { e.stopPropagation(); setShowInfo(true); }}
-              onTouchEnd={(e) => { e.stopPropagation(); setShowInfo(false); }}
-              className="p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-gray-400 hover:text-white border border-white/5 hover:border-white/20 backdrop-blur-md transition-all active:scale-95 select-none"
-            >
-              <Info size={12} />
-            </button>
-          </div>
-        )}
 
         {/* Top Right Status & Logo */}
         <div className="absolute top-6 right-6 z-20 flex flex-col items-end gap-1">
@@ -511,25 +484,25 @@ function App() {
 
 
 
-            {/* Info Floating Toast (Centered & Simplified) */}
+      {/* Info Floating Toast (Centered & Simplified) */}
       {showInfo && (
         <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 pointer-events-none animate-in fade-in zoom-in-95 duration-200">
-            <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-2xl min-w-[200px]">
-                <div className="flex flex-col gap-2">
-                    <div className="flex justify-between items-center text-[10px] border-b border-white/5 pb-2">
-                        <span className="font-bold text-gray-200 tracking-wider">DATA USAGE</span>
-                        <Info size={12} className="text-blue-400"/>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <span className="text-[10px] text-blue-400 font-bold">HQ</span>
-                        <span className="text-[10px] text-gray-300 font-mono">140 MB/h</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <span className="text-[10px] text-emerald-400 font-bold">ECO</span>
-                        <span className="text-[10px] text-gray-300 font-mono">84 MB/h</span>
-                    </div>
-                </div>
+          <div className="bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl p-4 shadow-2xl min-w-[200px]">
+            <div className="flex flex-col gap-2">
+              <div className="flex justify-between items-center text-[10px] border-b border-white/5 pb-2">
+                <span className="font-bold text-gray-200 tracking-wider">DATA USAGE</span>
+                <Info size={12} className="text-blue-400" />
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] text-blue-400 font-bold">HQ</span>
+                <span className="text-[10px] text-gray-300 font-mono">140 MB/h</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[10px] text-emerald-400 font-bold">ECO</span>
+                <span className="text-[10px] text-gray-300 font-mono">84 MB/h</span>
+              </div>
             </div>
+          </div>
         </div>
       )}
 
@@ -555,13 +528,13 @@ function App() {
             </a>
           </div>
 
-                    <div className="flex flex-col items-center gap-1">
-             <p className="text-[9px] text-gray-600 leading-relaxed max-w-sm mx-auto">
-               v3.0.5, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
-               <br />
-               hopRadio/SERGRadio are property of @yepzhi. All Rights Reserved 2025.
-               <br />
-               We don't play what you want, we play what you need.
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-[9px] text-gray-600 leading-relaxed max-w-sm mx-auto">
+              v3.0.5, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
+              <br />
+              hopRadio/SERGRadio are property of @yepzhi. All Rights Reserved 2025.
+              <br />
+              We don't play what you want, we play what you need.
             </p>
           </div>
         </div>
