@@ -84,9 +84,11 @@ CLIENTS = []      # 320kbps
 CLIENTS_192 = []  # 192kbps
 
 # BURST_BUFFER: Pre-fills new clients for instant playback
-# Increased to ~80 seconds (200 chunks) to prevent "Jumping Back" on reconnects
-BURST_BUFFER = deque(maxlen=200)      # 320kbps
-BURST_BUFFER_192 = deque(maxlen=200)  # 192kbps
+# Adjusted for ~20 seconds of audio to keep start times aligned
+# 320k: ~40KB/s -> 20s = 800KB -> ~12 chunks (64KB)
+# 192k: ~24KB/s -> 20s = 480KB -> ~7 chunks (64KB)
+BURST_BUFFER = deque(maxlen=20)      # 320kbps
+BURST_BUFFER_192 = deque(maxlen=12)  # 192kbps
 
 CURRENT_TRACK_INFO = {"title": "SERGRadio Live", "artist": "Mixes by SERG"}
 
@@ -116,6 +118,16 @@ def select_next_track():
     CURRENT_INDEX = (CURRENT_INDEX + 1) % len(PLAYLIST)
     
     return track
+
+def get_track_duration(file_path):
+    try:
+        cmd = ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", file_path]
+        result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+        return float(result.stdout.strip())
+    except Exception as e:
+        print(f"Error getting duration for {file_path}: {e}")
+        return 0
+
 
 def download_track(filename):
     """Download track from HF to local cache"""
@@ -203,9 +215,12 @@ def broadcast_stream():
             def update_meta_delayed():
                  global CURRENT_TRACK_INFO
                  
-                 # Calculate Duration (320kbps = 40,000 bytes/sec)
-                 duration_sec = file_size / 40000
-                 
+                 # Calculate Duration using ffprobe (Accurate)
+                 duration_sec = get_track_duration(local_path)
+                 if duration_sec == 0:
+                     # Fallback estimation
+                     duration_sec = file_size / 40000
+
                  # Add duration and start time to track info
                  track['duration'] = duration_sec
                  track['started_at'] = time.time()
@@ -213,8 +228,8 @@ def broadcast_stream():
                  CURRENT_TRACK_INFO = track
                  print(f"METADATA UPDATED: {track['title']} (Duration: {duration_sec/60:.1f}m)")
             
-            # 20 second delay to match buffer latency
-            threading.Timer(20.0, update_meta_delayed).start()
+            # 5 second delay (Reduced due to smaller burst buffer)
+            threading.Timer(5.0, update_meta_delayed).start()
             
             print(f"STREAMING START: {track['title']} (Dual Quality)")
             
