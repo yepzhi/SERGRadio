@@ -181,6 +181,11 @@ function App() {
       setIsBuffering(state);
     };
 
+    // Quality Sync Hook (v3.0.11)
+    radio.onQualityChange = (q) => {
+      setQuality(q);
+    };
+
     // Initialize Particles Logic
     const initParticles = (width, height) => {
       const count = 60;
@@ -429,7 +434,7 @@ function App() {
           </div>
         </button>
 
-        {/* Quality Controls (Moved above Song Name - v3.0.10) */}
+        {/* Quality Controls (Moved above Song Name - v3.0.11) */}
         {(isPlaying || isBuffering) && (
           <div className="w-full max-w-[350px] flex justify-end px-4 -mt-6 mb-2 z-30 pointer-events-auto relative">
             <div className="flex items-center gap-2">
@@ -557,7 +562,7 @@ function App() {
 
           <div className="flex flex-col items-center gap-1">
             <p className="text-[9px] text-gray-600 leading-relaxed max-w-sm mx-auto">
-              v3.0.10, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
+              v3.0.11, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
               <br />
               hopRadio/SERGRadio are property of @yepzhi. All Rights Reserved 2025.
               <br />
