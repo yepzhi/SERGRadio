@@ -429,6 +429,36 @@ function App() {
           </div>
         </button>
 
+        {/* Quality Controls (Moved above Song Name - v3.0.8) */}
+        {(isPlaying || isBuffering) && (
+          <div className="w-full max-w-[350px] flex justify-end px-4 -mt-6 mb-2 z-30 pointer-events-auto relative">
+            <div className="flex items-center gap-2">
+              {/* Toggle */}
+              <button
+                onClick={toggleQuality}
+                className="px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 text-[9px] font-bold text-gray-400 hover:text-white border border-white/5 hover:border-white/20 shadow-lg backdrop-blur-md transition-all active:scale-95 uppercase tracking-wider flex items-center gap-2"
+                title="Switch Audio Quality"
+              >
+                <span className={quality === '320' ? 'text-blue-400' : 'text-gray-600'}>HQ</span>
+                <span className="text-gray-600">/</span>
+                <span className={quality === '192' ? 'text-emerald-400' : 'text-gray-600'}>ECO</span>
+              </button>
+
+              {/* Info Button (Press-to-Hold) */}
+              <button
+                onMouseDown={(e) => { e.stopPropagation(); setShowInfo(true); }}
+                onMouseUp={(e) => { e.stopPropagation(); setShowInfo(false); }}
+                onMouseLeave={(e) => { e.stopPropagation(); setShowInfo(false); }}
+                onTouchStart={(e) => { e.stopPropagation(); setShowInfo(true); }}
+                onTouchEnd={(e) => { e.stopPropagation(); setShowInfo(false); }}
+                className="p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-gray-400 hover:text-white border border-white/5 hover:border-white/20 backdrop-blur-md transition-all active:scale-95 select-none"
+              >
+                <Info size={12} />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Now Playing Info */}
         <div className="text-center min-h-[60px] flex flex-col items-center justify-center z-10">
           {!isPlaying && (
@@ -509,7 +539,7 @@ function App() {
       {/* Footer (Centered + Merged Legal) */}
       <div className="w-full max-w-[450px] flex flex-col items-center gap-4 mt-8 pb-6 z-20 pointer-events-auto">
 
-        
+
 
         {/* Legal Text & Credits (Merged) */}
         <div className="text-center mt-2 px-4 opacity-60 hover:opacity-100 transition-opacity duration-300">
@@ -527,7 +557,7 @@ function App() {
 
           <div className="flex flex-col items-center gap-1">
             <p className="text-[9px] text-gray-600 leading-relaxed max-w-sm mx-auto">
-              v3.0.7, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
+              v3.0.8, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
               <br />
               hopRadio/SERGRadio are property of @yepzhi. All Rights Reserved 2025.
               <br />
