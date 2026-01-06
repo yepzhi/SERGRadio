@@ -146,10 +146,8 @@ function App() {
 
     // PWA Install Prompt - Removed
 
-    // Initialize Audio Engine (async)
-    // Quality Sync Hook - MUST be set BEFORE init() (v3.1.1 Fix)
+    // Quality Sync Hook - MUST be set BEFORE init()
     radio.onQualityChange = (q) => {
-      console.log("[QUALITY FIX] Engine changed quality to:", q, "- Syncing UI");
       setQuality(q);
     };
 
@@ -192,7 +190,7 @@ function App() {
       setIsBuffering(state);
     };
 
-    // Quality Sync Hook (moved above initRadio - v3.1.1)
+    // Quality Sync Hook (moved above initRadio - v3.2.0)
 
     // Initialize Particles Logic
     const initParticles = (width, height) => {
@@ -322,9 +320,7 @@ function App() {
 
 
   const toggleQuality = () => {
-    console.log("[QUALITY DEBUG] UI quality:", quality, "| Engine quality:", radio.currentQuality);
     const newQ = quality === '320' ? '192' : '320';
-    console.log("[QUALITY DEBUG] Switching to:", newQ);
     setQuality(newQ);
     radio.setQuality(newQ);
   };
@@ -444,7 +440,7 @@ function App() {
           </div>
         </button>
 
-        {/* Quality Controls (Moved above Song Name - v3.1.1) */}
+        {/* Quality Controls (Moved above Song Name - v3.2.0) */}
         {(isPlaying || isBuffering) && (
           <div className="w-full max-w-[350px] flex justify-end px-4 -mt-3 mb-0 z-30 pointer-events-auto relative">
             <div className="flex items-center gap-2">
@@ -578,7 +574,7 @@ function App() {
 
           <div className="flex flex-col items-center gap-1">
             <p className="text-[9px] text-gray-600 leading-relaxed max-w-sm mx-auto">
-              v3.1.1, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
+              v3.2.0, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
               <br />
               hopRadio/SERGRadio are property of @yepzhi. All Rights Reserved 2025.
               <br />
