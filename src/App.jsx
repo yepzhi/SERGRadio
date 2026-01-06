@@ -555,14 +555,13 @@ function App() {
             </a>
           </div>
 
-          <div className="flex flex-col items-center gap-1">
-            <p className="text-[9px] text-gray-600 leading-relaxed max-w-sm mx-auto">
-              <span className="font-mono tracking-widest block mb-1">v3.0.3 • All Rights Reserved 2025</span>
-              hopRadio/SERGRadio are property of @yepzhi.
-              <br />
-              Made by @yepzhi, design and music selection for hopRadio. SERGRadio mixes by @SERG.
-              <br />
-              We don't play what you want, we play what you need.
+                    <div className="flex flex-col items-center gap-1">
+             <p className="text-[9px] text-gray-600 leading-relaxed max-w-sm mx-auto">
+               v3.0.5, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
+               <br />
+               hopRadio/SERGRadio are property of @yepzhi. All Rights Reserved 2025.
+               <br />
+               We don't play what you want, we play what you need.
             </p>
           </div>
         </div>
