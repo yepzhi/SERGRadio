@@ -529,7 +529,7 @@ function App() {
         </div>
       )}
 
-            {/* Footer (Centered + Merged Legal) */}
+      {/* Footer (Centered + Merged Legal) */}
       <div className="w-full max-w-[450px] flex flex-col items-center gap-4 mt-8 pb-6 z-20 pointer-events-auto">
 
         {/* Invest Button (Restored) */}
@@ -539,28 +539,28 @@ function App() {
 
         {/* Legal Text & Credits (Merged) */}
         <div className="text-center mt-2 px-4 opacity-60 hover:opacity-100 transition-opacity duration-300">
-             <div className="flex items-center justify-center gap-2 mb-2">
-                <span className="text-gray-500 text-[10px] tracking-wide font-medium mr-1">Mixes by</span>
-                <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm text-[10px]">
-                    @SERG
-                </a>
-                <span className="text-gray-700 mx-1">•</span>
-                <span className="text-gray-500 text-[10px] tracking-wide font-medium mr-1">Site by</span>
-                <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm text-[10px]">
-                    @yepzhi
-                </a>
-             </div>
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <span className="text-gray-500 text-[10px] tracking-wide font-medium mr-1">Mixes by</span>
+            <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm text-[10px]">
+              @SERG
+            </a>
+            <span className="text-gray-700 mx-1">•</span>
+            <span className="text-gray-500 text-[10px] tracking-wide font-medium mr-1">Site by</span>
+            <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm text-[10px]">
+              @yepzhi
+            </a>
+          </div>
 
-             <div className="flex flex-col items-center gap-1">
-                 <span className="text-gray-600 text-[9px] font-mono tracking-widest block mb-1">v3.0.3 • All Rights Reserved 2025</span>
-                 <p className="text-[9px] text-gray-600 leading-relaxed max-w-sm mx-auto">
-                    hopRadio/SERGRadio are property of @yepzhi.
-                    <br/>
-                    Made by @yepzhi, design and music selection for hopRadio. SERGRadio mixes by @SERG.
-                    <br/>
-                    We don't play what you want, we play what you need.
-                </p>
-             </div>
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-[9px] text-gray-600 leading-relaxed max-w-sm mx-auto">
+              <span className="font-mono tracking-widest block mb-1">v3.0.3 • All Rights Reserved 2025</span>
+              hopRadio/SERGRadio are property of @yepzhi.
+              <br />
+              Made by @yepzhi, design and music selection for hopRadio. SERGRadio mixes by @SERG.
+              <br />
+              We don't play what you want, we play what you need.
+            </p>
+          </div>
         </div>
 
       </div>
