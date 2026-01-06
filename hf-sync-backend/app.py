@@ -80,11 +80,15 @@ def validate_playlist():
 PLAYLIST = validate_playlist()
 
 # Global State
-CLIENTS = []
+CLIENTS = []      # 320kbps
+CLIENTS_192 = []  # 192kbps
+
 # BURST_BUFFER: Pre-fills new clients for instant playback
-# Reduced to ~10 seconds (25 chunks) to prevent "Jumping Back" on reconnects
-BURST_BUFFER = deque(maxlen=25)
-CURRENT_TRACK_INFO = {"title": "Connecting...", "artist": "SERGRadio"}
+# Increased to ~80 seconds (200 chunks) to prevent "Jumping Back" on reconnects
+BURST_BUFFER = deque(maxlen=200)      # 320kbps
+BURST_BUFFER_192 = deque(maxlen=200)  # 192kbps
+
+CURRENT_TRACK_INFO = {"title": "SERGRadio Live", "artist": "Mixes by SERG"}
 
 # Track Queue for pre-downloaded files
 # Track Queue for pre-downloaded files
@@ -212,64 +216,68 @@ def broadcast_stream():
             # 20 second delay to match buffer latency
             threading.Timer(20.0, update_meta_delayed).start()
             
-            print(f"STREAMING START: {track['title']} ({file_size / (1024*1024):.1f} MB)")
+            print(f"STREAMING START: {track['title']} (Dual Quality)")
             
-            # FFmpeg command for local file playback
-            cmd = [
-                'ffmpeg',
-                '-re',  # Real-time playback
-                '-i', local_path,
-                '-vn',
-                '-f', 'mp3',
-                '-b:a', '320k',
-                '-bufsize', '8192k',  # Large buffer for smooth output
-                '-ac', '2',
-                '-ar', '44100',
+            # --- HQ (320k) ---
+            cmd_320 = [
+                'ffmpeg', '-re', '-i', local_path, '-vn',
+                '-f', 'mp3', '-b:a', '320k', '-bufsize', '8192k',
+                '-ac', '2', '-ar', '44100',
                 '-af', 'highpass=f=28,lowshelf=g=7:f=95,equalizer=f=60:width_type=o:width=2:g=4,equalizer=f=800:width_type=o:width=2:g=-3,highshelf=g=9:f=10000,acompressor=threshold=-14dB:ratio=2:attack=8:release=250',
-                '-loglevel', 'error',
-                'pipe:1'
+                '-loglevel', 'error', 'pipe:1'
             ]
             
-            process = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
-            )
-            
-            bytes_streamed = 0
-            start_time = time.time()
-            
-            while True:
-                chunk = process.stdout.read(CHUNK_SIZE)
-                if not chunk:
-                    stderr = process.stderr.read()
-                    if stderr:
-                        print(f"FFmpeg: {stderr.decode()[:200]}")
-                    break
+            # --- ECO (192k) ---
+            cmd_192 = [
+                'ffmpeg', '-re', '-i', local_path, '-vn',
+                '-f', 'mp3', '-b:a', '192k', '-bufsize', '4096k',
+                '-ac', '2', '-ar', '44100',
+                '-af', 'highpass=f=28,lowshelf=g=7:f=95,equalizer=f=60:width_type=o:width=2:g=4,equalizer=f=800:width_type=o:width=2:g=-3,highshelf=g=9:f=10000,acompressor=threshold=-14dB:ratio=2:attack=8:release=250',
+                '-loglevel', 'error', 'pipe:1'
+            ]
+
+            try:
+                p320 = subprocess.Popen(cmd_320, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                p192 = subprocess.Popen(cmd_192, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 
-                bytes_streamed += len(chunk)
-                BURST_BUFFER.append(chunk)
+                start_time = time.time()
                 
-                dead_clients = []
-                for q in CLIENTS:
+                def stream_reader(process, buffer_deque, clients_list):
                     try:
-                        if q.full():
-                            try:
-                                q.get_nowait()
-                            except Empty:
-                                pass
-                        q.put_nowait(chunk)
-                    except:
-                        dead_clients.append(q)
+                        while True:
+                            chunk = process.stdout.read(CHUNK_SIZE)
+                            if not chunk: break
+                            buffer_deque.append(chunk)
+                            dead = []
+                            for q in clients_list:
+                                try:
+                                    if q.full():
+                                        try: q.get_nowait()
+                                        except Empty: pass
+                                    q.put_nowait(chunk)
+                                except: dead.append(q)
+                            for d in dead:
+                                if d in clients_list: clients_list.remove(d)
+                    except: pass
                 
-                for q in dead_clients:
-                    if q in CLIENTS:
-                        CLIENTS.remove(q)
-            
-            process.wait()
-            
-            duration = time.time() - start_time
-            print(f"FINISHED: {track['title']} - {bytes_streamed/(1024*1024):.1f}MB in {duration/60:.1f} min")
+                t1 = threading.Thread(target=stream_reader, args=(p320, BURST_BUFFER, CLIENTS))
+                t2 = threading.Thread(target=stream_reader, args=(p192, BURST_BUFFER_192, CLIENTS_192))
+                
+                t1.start()
+                t2.start()
+                
+                t1.join()
+                t2.join()
+                
+                p320.wait()
+                p192.wait()
+                
+                duration = time.time() - start_time
+                print(f"FINISHED: {track['title']} in {duration/60:.1f} min")
+
+            except Exception as e:
+                print(f"FFmpeg launch error: {e}")
+                time.sleep(1)
             
         except Exception as e:
             print(f"Broadcast error: {e}")
@@ -289,41 +297,46 @@ def index():
     }
     return {
         "status": "radio_active",
-        "version": "2.9.10",
-        "mode": "local_file_streaming",
-        "quality": "320kbps CBR",
-        "listeners": len(CLIENTS),
+        "version": "3.0.0",
+        "mode": "dual_quality_stream",
+        "listeners_320": len(CLIENTS),
+        "listeners_192": len(CLIENTS_192),
         "queue_size": READY_TRACKS.qsize(),
         "now_playing": now_playing,
         "playlist": [t['title'] for t in PLAYLIST] # Expose bag of songs
     }
 
 @app.get("/stream")
-def stream_audio():
+def stream_audio(q: str = "320"):
+    # Quality Selection
+    if q == "192":
+        target_clients = CLIENTS_192
+        target_burst = BURST_BUFFER_192
+    else:
+        target_clients = CLIENTS
+        target_burst = BURST_BUFFER
+
     def event_stream():
         # Large queue for maximum stability (~6-7 min buffer)
-        q = Queue(maxsize=1000)
+        client_q = Queue(maxsize=1000)
         
-        # Burst-fill with recent audio
-        backlog = list(BURST_BUFFER)
+        # Burst-fill
+        backlog = list(target_burst)
         for chunk in backlog:
-            try:
-                q.put_nowait(chunk)
-            except Full:
-                break
+            try: client_q.put_nowait(chunk)
+            except Full: break
         
-        CLIENTS.append(q)
-        print(f"Client connected. Burst: {len(backlog)}. Listeners: {len(CLIENTS)}")
+        target_clients.append(client_q)
         
         try:
             while True:
-                chunk = q.get()
+                chunk = client_q.get()
                 yield chunk
         except Exception as e:
-            print(f"Client disconnected: {e}")
+            pass
         finally:
-            if q in CLIENTS:
-                CLIENTS.remove(q)
+            if client_q in target_clients:
+                target_clients.remove(client_q)
 
     headers = {
         "Cache-Control": "no-cache, no-store, must-revalidate",
@@ -334,7 +347,7 @@ def stream_audio():
         "Content-Type": "audio/mpeg",
         "ice-name": "SERGRadio",
         "ice-description": "Live DJ Mixes",
-        "ice-audio-info": "bitrate=320",
+        "ice-audio-info": f"bitrate={q}",
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Expose-Headers": "*",
         "X-Content-Type-Options": "nosniff"

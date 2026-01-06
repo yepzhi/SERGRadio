@@ -80,9 +80,10 @@ const DataMonitor = ({ isPlaying }) => {
 function App() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [track, setTrack] = useState(null);
-  const [isLive, setIsLive] = useState(false);
   const [isBuffering, setIsBuffering] = useState(false);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isLive, setIsLive] = useState(false); // New v2.6.2 State
+  const [isOnline, setIsOnline] = useState(true);
+  const [quality, setQuality] = useState(radio.currentQuality || '320'); // Track quality state
   const [isReady, setIsReady] = useState(false); // Radio ready state
 
   // PWA State removed
@@ -306,7 +307,11 @@ function App() {
   };
 
 
-
+  const toggleQuality = () => {
+    const newQ = quality === '320' ? '192' : '320';
+    setQuality(newQ);
+    radio.setQuality(newQ);
+  };
 
   return (
     <div className="container min-h-[100dvh] flex flex-col items-center justify-center p-4 md:p-5 pb-16 md:pb-20 relative z-10 w-full max-w-4xl mx-auto">
@@ -379,6 +384,19 @@ function App() {
             className="absolute bottom-6 left-6 z-20 p-2 rounded-full bg-black/40 hover:bg-black/80 text-gray-500 hover:text-white transition-all active:scale-90 border border-white/5 hover:border-white/20 shadow-lg backdrop-blur-md"
             title="Force Refresh Connection">
             <RefreshCw size={14} />
+          </button>
+        )}
+
+        {/* Quality Toggle (Bottom Right - Mirroring Refresh) */}
+        {(isPlaying || isBuffering) && (
+          <button
+            onClick={toggleQuality}
+            className="absolute bottom-6 right-6 z-20 px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 text-[9px] font-bold text-gray-400 hover:text-white border border-white/5 hover:border-white/20 shadow-lg backdrop-blur-md transition-all active:scale-95 uppercase tracking-wider flex items-center gap-2"
+            title="Switch Audio Quality"
+          >
+            <span className={quality === '320' ? 'text-blue-400' : 'text-gray-600'}>320k</span>
+            <span className="text-gray-600">|</span>
+            <span className={quality === '192' ? 'text-emerald-400' : 'text-gray-600'}>192k</span>
           </button>
         )}
 
@@ -475,23 +493,18 @@ function App() {
 
 
 
-      {/* Footer (Right Aligned, Stacked Version) */}
-      <div className="absolute bottom-4 right-6 z-20 pointer-events-none flex flex-col items-end gap-1">
-        <div className="pointer-events-auto flex items-center gap-2">
-          <span className="text-gray-500 text-[10px] tracking-wide font-medium mr-1">Mixes by</span>
-          <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm text-[10px]">
-            @SERG
-          </a>
-          <span className="text-gray-700 mx-1">•</span>
-          <span className="text-gray-500 text-[10px] tracking-wide font-medium mr-1">Site by</span>
-          <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm text-[10px]">
-            @yepzhi
-          </a>
-        </div>
-        <div className="text-gray-600 text-[9px] font-mono tracking-widest opacity-80">
-          v2.9.10
-        </div>
-
+      {/* Footer / Disclaimer */}
+      <div className="mt-12 mb-4 text-center max-w-2xl px-6 opacity-60 hover:opacity-100 transition-opacity duration-500">
+        <p className="text-[10px] text-gray-500 font-medium leading-relaxed">
+          Made by <span className="text-gray-400">@yepzhi</span>, design and music selection for hopRadio. SERGRadio mixes by <span className="text-gray-400">@SERG</span>.
+        </p>
+        <p className="text-[9px] text-gray-600 mt-2 leading-relaxed">
+          This radio station consumes <span className="text-gray-500">140MB/hour</span> at maximum lossless audio (320kbps) and <span className="text-gray-500">84MB/hour</span> at normal quality (192kbps).
+          EQ settings applied to improve quality audio for listeners. We don't play what you want, we play what you need.
+        </p>
+        <p className="text-[9px] text-gray-600 mt-1 uppercase tracking-widest">
+          hopRadio/SERGRadio are property of @yepzhi, All Rights Reserved 2025 • v3.0.0
+        </p>
       </div>
 
 
