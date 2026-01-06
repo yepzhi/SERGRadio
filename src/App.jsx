@@ -41,36 +41,25 @@ const CountdownTimer = ({ startedAt, duration }) => {
   return <span>{timeLeft}</span>;
 };
 
-const DataMonitor = ({ isPlaying }) => {
-  const [stats, setStats] = useState({ speed: 0, total: 0 });
-
-  useEffect(() => {
-    // Hook into RadioEngine real stats
-    radio.onNetworkStats = (newStats) => {
-      setStats(newStats);
-    };
-    return () => { radio.onNetworkStats = null; };
-  }, []);
-
+const DataMonitor = ({ isPlaying, quality }) => {
   if (!isPlaying) return null;
 
-  // Format Speed: Bytes -> KB/s
-  const speedKB = (stats.speed / 1024).toFixed(0);
-  // Format Total: Bytes -> MB (No decimals)
-  const totalMB = (stats.total / (1024 * 1024)).toFixed(0);
+  const info = quality === '192'
+    ? { rate: '192kbps', cons: '1.4 MB/min' }
+    : { rate: '320kbps', cons: '2.4 MB/min' };
 
   return (
     <div className="mt-1 flex flex-col items-start opacity-70">
       <div className="flex items-center space-x-1">
         <Activity size={8} className="text-blue-400" />
         <span className="text-[8px] font-mono text-blue-300 tracking-wider">
-          {speedKB} KB/s
+          {info.rate}
         </span>
       </div>
       <div className="flex items-center space-x-1 mt-[1px]">
         <div className="w-[8px] flex justify-center"><div className="w-1 h-1 rounded-full bg-gray-500"></div></div>
         <span className="text-[8px] font-mono text-gray-400 tracking-wider">
-          {totalMB} MB TOT
+          {info.cons}
         </span>
       </div>
     </div>
@@ -181,7 +170,7 @@ function App() {
       setIsBuffering(state);
     };
 
-    // Quality Sync Hook (v3.1.3)
+    // Quality Sync Hook (v3.1.4)
     radio.onQualityChange = (q) => {
       setQuality(q);
     };
@@ -379,7 +368,7 @@ function App() {
             </span>
           </div>
           {/* Data Rate Indicator */}
-          <DataMonitor isPlaying={isPlaying} />
+          <DataMonitor isPlaying={isPlaying} quality={quality} />
         </div>
         }
 
@@ -434,7 +423,7 @@ function App() {
           </div>
         </button>
 
-        {/* Quality Controls (Moved above Song Name - v3.1.3) */}
+        {/* Quality Controls (Moved above Song Name - v3.1.4) */}
         {(isPlaying || isBuffering) && (
           <div className="w-full max-w-[350px] flex justify-end px-4 -mt-6 mb-2 z-30 pointer-events-auto relative">
             <div className="flex items-center gap-2">
@@ -568,7 +557,7 @@ function App() {
 
           <div className="flex flex-col items-center gap-1">
             <p className="text-[9px] text-gray-600 leading-relaxed max-w-sm mx-auto">
-              v3.1.3, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
+              v3.1.4, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
               <br />
               hopRadio/SERGRadio are property of @yepzhi. All Rights Reserved 2025.
               <br />
