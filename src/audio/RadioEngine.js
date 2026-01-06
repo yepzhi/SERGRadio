@@ -48,6 +48,9 @@ export const radio = new class RadioEngine {
         } else if (navigator.connection && (navigator.connection.saveData || navigator.connection.type === 'cellular' || navigator.connection.effectiveType === '2g' || navigator.connection.effectiveType === '3g')) {
             this.currentQuality = '192';
             console.log("Auto-switched to Data Saver (192kbps) - Cellular/Slow Network Detected");
+        } else {
+            // Default to HQ on WiFi/Good Connection
+            console.log("WiFi/Fast Connection Detected - Defaulting to HQ (320kbps)");
         }
 
         // Initial fake metadata

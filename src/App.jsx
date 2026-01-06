@@ -389,17 +389,11 @@ function App() {
         )}
 
         {/* Quality Toggle & Info (Mirroring Refresh) */}
+        {/* Quality Toggle & Info (Mirroring Refresh) */}
         {(isPlaying || isBuffering) && (
           <div className="absolute bottom-6 right-6 z-20 flex items-center gap-2">
 
-            {/* Info Button */}
-            <button
-              onClick={(e) => { e.stopPropagation(); setShowInfo(true); }}
-              className="p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-gray-400 hover:text-white border border-white/5 hover:border-white/20 backdrop-blur-md transition-all active:scale-95"
-            >
-              <Info size={12} />
-            </button>
-
+            {/* Toggle */}
             <button
               onClick={toggleQuality}
               className="px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 text-[9px] font-bold text-gray-400 hover:text-white border border-white/5 hover:border-white/20 shadow-lg backdrop-blur-md transition-all active:scale-95 uppercase tracking-wider flex items-center gap-2"
@@ -408,6 +402,14 @@ function App() {
               <span className={quality === '320' ? 'text-blue-400' : 'text-gray-600'}>320k</span>
               <span className="text-gray-600">|</span>
               <span className={quality === '192' ? 'text-emerald-400' : 'text-gray-600'}>192k</span>
+            </button>
+
+            {/* Info Button (Right Side) */}
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowInfo(true); setTimeout(() => setShowInfo(false), 4000); }}
+              className="p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-gray-400 hover:text-white border border-white/5 hover:border-white/20 backdrop-blur-md transition-all active:scale-95"
+            >
+              <Info size={12} />
             </button>
           </div>
         )}
@@ -505,35 +507,25 @@ function App() {
 
 
 
-      {/* Info Modal */}
+            {/* Info Floating Toast (Transparent Announce) */}
       {showInfo && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-200" onClick={() => setShowInfo(false)}>
-          <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6 max-w-sm w-full shadow-2xl relative" onClick={e => e.stopPropagation()}>
-            <button onClick={() => setShowInfo(false)} className="absolute top-4 right-4 text-gray-500 hover:text-white"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
-            <h3 className="text-white font-bold text-lg mb-4 flex items-center gap-2"><Info size={20} className="text-blue-500" /> Audio Quality</h3>
-
-            <div className="space-y-4 text-sm text-gray-300">
-              <div className="p-3 bg-black/30 rounded-lg border border-gray-800">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-bold text-blue-400">HQ (320kbps)</span>
-                  <span className="text-xs text-gray-500">~140 MB/hr</span>
+        <div className="absolute bottom-20 right-6 z-30 pointer-events-none animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-xl max-w-[180px]">
+                <div className="flex flex-col gap-1.5">
+                    <div className="flex justify-between items-center text-[10px] border-b border-white/5 pb-1">
+                        <span className="font-bold text-gray-300">Data Usage</span>
+                        <Info size={10} className="text-blue-400"/>
+                    </div>
+                    <div className="flex justify-between items-center">
+                        <span className="text-[9px] text-blue-400 font-bold">HQ 320</span>
+                        <span className="text-[9px] text-gray-400">140MB/h</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                        <span className="text-[9px] text-emerald-400 font-bold">ECO 192</span>
+                        <span className="text-[9px] text-gray-400">84MB/h</span>
+                    </div>
                 </div>
-                <p className="text-xs text-gray-500">Maximum fidelity. Best for WiFi or Unlimited Data.</p>
-              </div>
-
-              <div className="p-3 bg-black/30 rounded-lg border border-gray-800">
-                <div className="flex justify-between items-center mb-1">
-                  <span className="font-bold text-emerald-400">ECO (192kbps)</span>
-                  <span className="text-xs text-gray-500">~84 MB/hr</span>
-                </div>
-                <p className="text-xs text-gray-500">Data saver mode. Auto-selected on mobile networks.</p>
-              </div>
-
-              <p className="text-[10px] text-gray-500 pt-2 italic text-center">
-                * App automatically detects network type on startup. Your manual selection is saved.
-              </p>
             </div>
-          </div>
         </div>
       )}
 
