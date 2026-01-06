@@ -529,11 +529,17 @@ function App() {
                 <Info size={12} className="text-blue-400" />
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[10px] text-blue-400 font-bold">HQ</span>
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-blue-400 font-bold">HQ</span>
+                  <span className="text-[8px] text-gray-500 tracking-tight">Higher quality</span>
+                </div>
                 <span className="text-[10px] text-gray-300 font-mono">140 MB/h</span>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-[10px] text-emerald-400 font-bold">ECO</span>
+              <div className="flex justify-between items-center mt-1">
+                <div className="flex flex-col">
+                  <span className="text-[10px] text-emerald-400 font-bold">ECO</span>
+                  <span className="text-[8px] text-gray-500 tracking-tight">Lower quality</span>
+                </div>
                 <span className="text-[10px] text-gray-300 font-mono">84 MB/h</span>
               </div>
             </div>
@@ -562,7 +568,7 @@ function App() {
 
           <div className="flex flex-col items-center gap-1">
             <p className="text-[9px] text-gray-600 leading-relaxed max-w-sm mx-auto">
-              v3.0.11, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
+              v3.1.0, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
               <br />
               hopRadio/SERGRadio are property of @yepzhi. All Rights Reserved 2025.
               <br />
