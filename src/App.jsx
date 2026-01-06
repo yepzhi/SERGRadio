@@ -399,9 +399,9 @@ function App() {
               className="px-3 py-1 rounded-full bg-black/40 hover:bg-black/60 text-[9px] font-bold text-gray-400 hover:text-white border border-white/5 hover:border-white/20 shadow-lg backdrop-blur-md transition-all active:scale-95 uppercase tracking-wider flex items-center gap-2"
               title="Switch Audio Quality"
             >
-              <span className={quality === '320' ? 'text-blue-400' : 'text-gray-600'}>320k</span>
-              <span className="text-gray-600">|</span>
-              <span className={quality === '192' ? 'text-emerald-400' : 'text-gray-600'}>192k</span>
+              <span className={quality === '320' ? 'text-blue-400' : 'text-gray-600'}>HQ</span>
+              <span className="text-gray-600">/</span>
+              <span className={quality === '192' ? 'text-emerald-400' : 'text-gray-600'}>ECO</span>
             </button>
 
             {/* Info Button (Right Side) */}
@@ -507,46 +507,60 @@ function App() {
 
 
 
-            {/* Info Floating Toast (Transparent Announce) */}
+      {/* Info Floating Toast (Transparent Announce) */}
       {showInfo && (
         <div className="absolute bottom-20 right-6 z-30 pointer-events-none animate-in fade-in slide-in-from-bottom-2 duration-300">
-            <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-xl max-w-[180px]">
-                <div className="flex flex-col gap-1.5">
-                    <div className="flex justify-between items-center text-[10px] border-b border-white/5 pb-1">
-                        <span className="font-bold text-gray-300">Data Usage</span>
-                        <Info size={10} className="text-blue-400"/>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <span className="text-[9px] text-blue-400 font-bold">HQ 320</span>
-                        <span className="text-[9px] text-gray-400">140MB/h</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <span className="text-[9px] text-emerald-400 font-bold">ECO 192</span>
-                        <span className="text-[9px] text-gray-400">84MB/h</span>
-                    </div>
-                </div>
+          <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-xl p-3 shadow-xl max-w-[180px]">
+            <div className="flex flex-col gap-1.5">
+              <div className="flex justify-between items-center text-[10px] border-b border-white/5 pb-1">
+                <span className="font-bold text-gray-300">Data Usage</span>
+                <Info size={10} className="text-blue-400" />
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[9px] text-blue-400 font-bold">HQ 320</span>
+                <span className="text-[9px] text-gray-400">140MB/h</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[9px] text-emerald-400 font-bold">ECO 192</span>
+                <span className="text-[9px] text-gray-400">84MB/h</span>
+              </div>
             </div>
+          </div>
         </div>
       )}
 
-      {/* Footer (Restored Old + Merged Legal) */}
-      <div className="absolute bottom-4 right-6 z-20 pointer-events-none flex flex-col items-end gap-1">
-        <div className="pointer-events-auto flex items-center gap-2">
-          <span className="text-gray-500 text-[10px] tracking-wide font-medium mr-1">Mixes by</span>
-          <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm text-[10px]">
-            @SERG
-          </a>
-          <span className="text-gray-700 mx-1">•</span>
-          <span className="text-gray-500 text-[10px] tracking-wide font-medium mr-1">Site by</span>
-          <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm text-[10px]">
-            @yepzhi
-          </a>
-        </div>
+            {/* Footer (Centered + Merged Legal) */}
+      <div className="w-full max-w-[450px] flex flex-col items-center gap-4 mt-8 pb-6 z-20 pointer-events-auto">
 
-        {/* Version & Short Legal */}
-        <div className="flex flex-col items-end opacity-60">
-          <span className="text-gray-600 text-[9px] font-mono tracking-widest">v3.0.0 • All Rights Reserved 2025</span>
-          <span className="text-[8px] text-gray-700 mt-0.5">We don't play what you want, we play what you need.</span>
+        {/* Invest Button (Restored) */}
+        <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="w-full max-w-[300px] px-4 py-2 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-gray-500 hover:text-gray-300 hover:border-gray-700 transition-all text-[10px] font-medium block text-center leading-tight shadow-lg backdrop-blur-md">
+          Do you like this? 💙 <span className="font-bold text-gray-400 group-hover:text-white">Lets make this a real radio 📡</span>
+        </a>
+
+        {/* Legal Text & Credits (Merged) */}
+        <div className="text-center mt-2 px-4 opacity-60 hover:opacity-100 transition-opacity duration-300">
+             <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="text-gray-500 text-[10px] tracking-wide font-medium mr-1">Mixes by</span>
+                <a href="https://www.instagram.com/sergrdz?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm text-[10px]">
+                    @SERG
+                </a>
+                <span className="text-gray-700 mx-1">•</span>
+                <span className="text-gray-500 text-[10px] tracking-wide font-medium mr-1">Site by</span>
+                <a href="https://yepzhi.com" target="_blank" rel="noreferrer" className="px-3 py-1 rounded-full bg-gradient-to-br from-gray-900 to-black border border-gray-800 text-blue-500 hover:text-blue-400 hover:border-blue-900 transition-all font-bold shadow-sm text-[10px]">
+                    @yepzhi
+                </a>
+             </div>
+
+             <div className="flex flex-col items-center gap-1">
+                 <span className="text-gray-600 text-[9px] font-mono tracking-widest block mb-1">v3.0.3 • All Rights Reserved 2025</span>
+                 <p className="text-[9px] text-gray-600 leading-relaxed max-w-sm mx-auto">
+                    hopRadio/SERGRadio are property of @yepzhi.
+                    <br/>
+                    Made by @yepzhi, design and music selection for hopRadio. SERGRadio mixes by @SERG.
+                    <br/>
+                    We don't play what you want, we play what you need.
+                </p>
+             </div>
         </div>
 
       </div>
