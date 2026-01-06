@@ -147,6 +147,12 @@ function App() {
     // PWA Install Prompt - Removed
 
     // Initialize Audio Engine (async)
+    // Quality Sync Hook - MUST be set BEFORE init() (v3.1.1 Fix)
+    radio.onQualityChange = (q) => {
+      console.log("[QUALITY FIX] Engine changed quality to:", q, "- Syncing UI");
+      setQuality(q);
+    };
+
     const initRadio = async () => {
       // Failsafe: Force entry after 5 seconds no matter what
       const failsafeTimer = setTimeout(() => {
@@ -186,10 +192,7 @@ function App() {
       setIsBuffering(state);
     };
 
-    // Quality Sync Hook (v3.1.1)
-    radio.onQualityChange = (q) => {
-      setQuality(q);
-    };
+    // Quality Sync Hook (moved above initRadio - v3.1.1)
 
     // Initialize Particles Logic
     const initParticles = (width, height) => {
