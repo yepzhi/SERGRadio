@@ -48,13 +48,20 @@ export const radio = new class RadioEngine {
         const saved = localStorage.getItem('serg_quality');
         if (saved) {
             this.currentQuality = saved;
+            console.log("Loaded saved quality preference:", saved);
         } else if (navigator.connection && (navigator.connection.saveData || navigator.connection.type === 'cellular' || navigator.connection.effectiveType === '2g' || navigator.connection.effectiveType === '3g')) {
             this.currentQuality = '192';
             console.log("Auto-switched to Data Saver (192kbps)");
-            if (this.onQualityChange) this.onQualityChange('192');
         } else {
             // Default to HQ on WiFi/Good Connection
+            this.currentQuality = '320';
             console.log("WiFi/Fast Connection Detected - Defaulting to HQ (320kbps)");
+        }
+
+        // CRITICAL: Always notify UI of the final quality (v3.1.1 Fix)
+        if (this.onQualityChange) {
+            console.log("[INIT] Syncing UI to quality:", this.currentQuality);
+            this.onQualityChange(this.currentQuality);
         }
 
         // Initial fake metadata
