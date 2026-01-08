@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { radio } from './audio/RadioEngine';
-import { Play, Pause, User, RefreshCw, WifiOff, Info, Activity } from 'lucide-react';
+import { Play, Pause, User, RefreshCw, WifiOff, Info, Activity, Speaker } from 'lucide-react';
 import AdSpace from './components/AdSpace';
 import './App.css';
 
@@ -391,12 +391,21 @@ function App() {
 
         {/* Bottom LEFT Refresh Button (v2.6.2) */}
         {(isPlaying || isBuffering) && (
-          <button
-            onClick={() => radio.reconnect()}
-            className="absolute bottom-6 left-6 z-20 p-2 rounded-full bg-black/40 hover:bg-black/80 text-gray-500 hover:text-white transition-all active:scale-90 border border-white/5 hover:border-white/20 shadow-lg backdrop-blur-md"
-            title="Force Refresh Connection">
-            <RefreshCw size={14} />
-          </button>
+          <div className="absolute bottom-6 left-6 z-20 flex items-center gap-2">
+            <button
+              onClick={() => radio.reconnect()}
+              className="p-2 rounded-full bg-black/40 hover:bg-black/80 text-gray-500 hover:text-white transition-all active:scale-90 border border-white/5 hover:border-white/20 shadow-lg backdrop-blur-md"
+              title="Force Refresh Connection">
+              <RefreshCw size={14} />
+            </button>
+            {/* Speaker Selection Button (v3.2.5) */}
+            <button
+              onClick={() => radio.selectAudioOutput()}
+              className="p-2 rounded-full bg-black/40 hover:bg-black/80 text-gray-500 hover:text-white transition-all active:scale-90 border border-white/5 hover:border-white/20 shadow-lg backdrop-blur-md"
+              title="Select Audio Output">
+              <Speaker size={14} />
+            </button>
+          </div>
         )}
 
         {/* Quality Toggle & Info (Mirroring Refresh) */}
@@ -574,7 +583,7 @@ function App() {
 
           <div className="flex flex-col items-center gap-1">
             <p className="text-[9px] text-gray-600 leading-relaxed max-w-sm mx-auto">
-              v3.2.0, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
+              v3.2.5, Made by @yepzhi, design and music selection by @yepzhi for hopRadio, SERGRadio mixes by @SERG.
               <br />
               hopRadio/SERGRadio are property of @yepzhi. All Rights Reserved 2025.
               <br />

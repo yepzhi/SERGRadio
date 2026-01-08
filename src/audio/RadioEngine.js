@@ -32,6 +32,13 @@ export const radio = new class RadioEngine {
         // Silence Detection
         this.silenceStartTime = null;
         this.silenceMonitorId = null;
+
+        // Audio Output Selection (v3.2.5)
+        this.currentOutputDevice = null;
+        this.onAudioOutputChange = null;
+
+        // Auto-Resume on Device Reconnect (v3.2.5)
+        this.wasPlayingBeforeDisconnect = false;
     }
 
     reconnect() {
@@ -58,6 +65,9 @@ export const radio = new class RadioEngine {
 
         this._updateMetadata();
         this._setupNetworkListeners();
+
+        // Audio Device Change Listener (Auto-Resume)
+        this._setupDeviceChangeListener();
     }
 
     setQuality(q) {
@@ -320,6 +330,12 @@ export const radio = new class RadioEngine {
 
     pause() {
         console.log("RadioEngine: Stopping Stream");
+
+        // Store state for auto-resume on device reconnect
+        if (this.isPlaying) {
+            this.wasPlayingBeforeDisconnect = true;
+        }
+
         if (this.howl) {
             this.howl.unload(); // Truly stop to save bandwidth
             this.howl = null;
@@ -392,6 +408,77 @@ export const radio = new class RadioEngine {
             navigator.mediaSession.playbackState = 'playing';
             navigator.mediaSession.setActionHandler('play', () => this.play());
             navigator.mediaSession.setActionHandler('pause', () => this.pause());
+        }
+    }
+
+    // --- Audio Output Selection (v3.2.5) ---
+
+    async getAudioOutputs() {
+        try {
+            await navigator.mediaDevices.getUserMedia({ audio: true }).catch(() => { });
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            return devices.filter(d => d.kind === 'audiooutput');
+        } catch (err) {
+            console.warn('RadioEngine: Cannot enumerate audio devices:', err);
+            return [];
+        }
+    }
+
+    async setAudioOutput(deviceId) {
+        try {
+            if (Howler.ctx && typeof Howler.ctx.setSinkId === 'function') {
+                await Howler.ctx.setSinkId(deviceId);
+                this.currentOutputDevice = deviceId;
+                console.log('RadioEngine: Audio output changed to:', deviceId);
+                if (this.onAudioOutputChange) this.onAudioOutputChange(deviceId);
+                localStorage.setItem('serg_audio_output', deviceId);
+            } else {
+                console.warn('RadioEngine: setSinkId not supported');
+            }
+        } catch (err) {
+            console.error('RadioEngine: Failed to set audio output:', err);
+        }
+    }
+
+    async selectAudioOutput() {
+        try {
+            if (navigator.mediaDevices.selectAudioOutput) {
+                const device = await navigator.mediaDevices.selectAudioOutput();
+                if (device) {
+                    await this.setAudioOutput(device.deviceId);
+                    return device;
+                }
+            } else {
+                console.warn('RadioEngine: selectAudioOutput not supported');
+            }
+        } catch (err) {
+            console.error('RadioEngine: Audio output selection cancelled or failed:', err);
+        }
+        return null;
+    }
+
+    _setupDeviceChangeListener() {
+        if (navigator.mediaDevices) {
+            navigator.mediaDevices.addEventListener('devicechange', async () => {
+                console.log('RadioEngine: Audio device change detected');
+
+                if (this.wasPlayingBeforeDisconnect && !this.isPlaying) {
+                    console.log('RadioEngine: Auto-resuming playback after device reconnect');
+                    setTimeout(() => {
+                        this.play();
+                        this.wasPlayingBeforeDisconnect = false;
+                    }, 500);
+                }
+
+                const savedOutput = localStorage.getItem('serg_audio_output');
+                if (savedOutput) {
+                    const devices = await this.getAudioOutputs();
+                    const found = devices.find(d => d.deviceId === savedOutput);
+                    if (found) {
+                        await this.setAudioOutput(savedOutput);
+                    }
+                }
+            });
         }
     }
 };
