@@ -109,7 +109,9 @@ function App() {
         const res = await fetch('https://yepzhi-sergradio-sync.hf.space/');
         if (res.ok) {
           const data = await res.json();
-          setListeners(data.listeners || 0);
+          // Combine both quality streams for total listener count
+          const totalListeners = (data.listeners_320 || 0) + (data.listeners_192 || 0);
+          setListeners(totalListeners);
           // Auto-update track info from server (Metadata Sync)
           if (data.now_playing) {
             setTrack(data.now_playing);
