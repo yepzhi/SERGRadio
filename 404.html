@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <title>Redirecting... | yepzhi.com</title>
     <script type="text/javascript">
-        const pathSegments = window.location.pathname.split("/");
+        // Normalize path by stripping .html and redirecting to project root
+        const cleanPath = window.location.pathname.replace(/\.html$/, "");
+        const pathSegments = cleanPath.split("/");
         const projectRoot = pathSegments.slice(0, 2).join("/");
         window.location.replace(window.location.origin + projectRoot + "/");
     </script>
