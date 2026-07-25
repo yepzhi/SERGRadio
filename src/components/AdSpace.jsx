@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, ArrowRight, Bot, Globe } from 'lucide-react';
+import { Sparkles, ArrowRight, Bot, Cpu } from 'lucide-react';
 
 const PROMO_SLIDES = [
     {
@@ -9,8 +9,7 @@ const PROMO_SLIDES = [
         title: "¿Quieres entender la tecnología a tu alrededor?",
         subtitle: "¡Inicia gratis hoy con IA Generativa & STEMBot Socrático! ⚡",
         cta: "Aprender Gratis",
-        tagStyle: "bg-blue-500/20 text-blue-400 border-blue-500/30",
-        accentGlow: "hover:border-blue-400/50 hover:shadow-[0_0_30px_rgba(37,99,235,0.3)]"
+        tagStyle: "bg-cyan-500/15 text-cyan-300 border-cyan-500/30"
     },
     {
         lang: "EN",
@@ -19,8 +18,7 @@ const PROMO_SLIDES = [
         title: "Want to know about the Tech around you?",
         subtitle: "Start now all free courses powered by GenAI & STEMBot! ⚡",
         cta: "Start Learning Free",
-        tagStyle: "bg-cyan-500/20 text-cyan-300 border-cyan-500/30",
-        accentGlow: "hover:border-cyan-400/50 hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]"
+        tagStyle: "bg-blue-500/15 text-blue-300 border-blue-500/30"
     },
     {
         lang: "ES",
@@ -29,8 +27,7 @@ const PROMO_SLIDES = [
         title: "Domina IA, Semiconductores y Robótica",
         subtitle: "Aprende habilidades del futuro con simulaciones y micro-credenciales 🚀",
         cta: "Explorar Módulos",
-        tagStyle: "bg-teal-500/20 text-teal-300 border-teal-500/30",
-        accentGlow: "hover:border-teal-400/50 hover:shadow-[0_0_30px_rgba(20,184,166,0.3)]"
+        tagStyle: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30"
     },
     {
         lang: "EN",
@@ -39,8 +36,7 @@ const PROMO_SLIDES = [
         title: "Empower Your Digital Future",
         subtitle: "Zero cost, unlimited learning. From New York to Mexico & LATAM 🌎",
         cta: "Join JóvenesSTEM",
-        tagStyle: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
-        accentGlow: "hover:border-indigo-400/50 hover:shadow-[0_0_30px_rgba(99,102,241,0.3)]"
+        tagStyle: "bg-purple-500/15 text-purple-300 border-purple-500/30"
     }
 ];
 
@@ -67,16 +63,19 @@ const AdSpace = () => {
                 href="https://yepzhi.com/jsweb/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={`group block relative overflow-hidden rounded-2xl bg-gradient-to-b from-gray-900/90 via-black/90 to-gray-950/90 border border-white/15 p-4 transition-all duration-500 ${slide.accentGlow} backdrop-blur-xl`}
+                className="group block relative overflow-hidden rounded-2xl bg-slate-950/85 border border-white/15 p-4 shadow-2xl backdrop-blur-2xl transition-all duration-500 hover:border-cyan-400/40 hover:shadow-[0_0_35px_rgba(39,126,255,0.25)]"
             >
-                {/* Background Animated Gradient Mesh */}
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-cyan-600/10 to-indigo-600/10 opacity-50 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+                {/* Tech Dot Grid Texture */}
+                <div className="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:16px_16px] opacity-10 pointer-events-none"></div>
 
-                {/* Progress Line */}
-                <div className="absolute top-0 left-0 right-0 h-0.5 bg-white/5 overflow-hidden">
+                {/* Animated Ambient Glow */}
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-cyan-500/20 rounded-full blur-3xl group-hover:bg-blue-500/30 transition-all duration-700 pointer-events-none"></div>
+
+                {/* Progress Bar Header */}
+                <div className="absolute top-0 left-0 right-0 h-0.5 bg-white/10 overflow-hidden">
                     <div
                         key={currentSlide}
-                        className="h-full bg-gradient-to-r from-blue-500 via-cyan-400 to-indigo-500 animate-pulse"
+                        className="h-full bg-gradient-to-r from-[#277eff] via-[#00d2ff] to-[#00a896]"
                         style={{
                             width: '100%',
                             transition: 'width 5.5s linear'
@@ -84,23 +83,27 @@ const AdSpace = () => {
                     />
                 </div>
 
-                {/* Top Bar: Brand Logo & Slide Indicators */}
-                <div className="flex items-center justify-between mb-3 relative z-10">
-                    <div className="flex items-center gap-1.5 font-black text-sm tracking-tight">
-                        <span className="bg-gradient-to-r from-blue-400 via-cyan-300 to-teal-300 bg-clip-text text-transparent">
+                {/* Top Bar: Glued JóvenesSTEM® Web Brand & Language Toggle */}
+                <div className="flex items-center justify-between mb-3.5 relative z-10 pt-1">
+                    {/* Glued Brand Logo matching yepzhi.com */}
+                    <div className="flex items-baseline font-black text-sm tracking-tight select-none">
+                        <span className="bg-gradient-to-r from-[#277eff] via-[#1a9dff] to-[#00a896] bg-clip-text text-transparent font-extrabold">
                             jóvenes
                         </span>
-                        <span className="text-white">STEM</span>
-                        <span className="text-[10px] text-cyan-400 font-bold bg-blue-500/15 border border-blue-500/30 px-1.5 py-0.5 rounded-md uppercase tracking-wider ml-1">
+                        <span className="text-white font-black tracking-tight">
+                            STEM
+                        </span>
+                        <sup className="text-[8px] font-bold text-cyan-400 align-super leading-none ml-0.5">&reg;</sup>
+                        <span className="text-[9px] text-white font-extrabold bg-gradient-to-r from-[#277eff] to-[#00d2ff] px-1.5 py-0.5 rounded-md uppercase tracking-wider ml-1.5 shadow-sm">
                             Web
                         </span>
                     </div>
 
-                    {/* Dots & Flag indicator */}
+                    {/* Indicators & Flag */}
                     <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-bold text-gray-300 bg-white/10 px-1.5 py-0.5 rounded flex items-center gap-1 border border-white/10">
+                        <span className="text-[10px] font-bold text-gray-300 bg-white/10 px-1.5 py-0.5 rounded-md flex items-center gap-1 border border-white/10">
                             <span>{slide.flag}</span>
-                            <span className="text-[9px] text-gray-400">{slide.lang}</span>
+                            <span className="text-[9px] text-gray-300 font-semibold">{slide.lang}</span>
                         </span>
 
                         <div className="flex items-center gap-1">
@@ -116,13 +119,13 @@ const AdSpace = () => {
                     </div>
                 </div>
 
-                {/* Dynamic Animated Content Body */}
+                {/* Dynamic Content with Smooth Transitions */}
                 <div
                     className={`relative z-10 transition-all duration-300 transform ${
                         isFading ? 'opacity-0 translate-y-2 scale-[0.98]' : 'opacity-100 translate-y-0 scale-100'
                     }`}
                 >
-                    <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] uppercase font-bold tracking-wider mb-2 border backdrop-blur-md shadow-sm ${slide.tagStyle}`}>
+                    <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[9px] uppercase font-bold tracking-wider mb-2 border backdrop-blur-md ${slide.tagStyle}`}>
                         <Sparkles size={10} className="animate-spin" style={{ animationDuration: '4s' }} />
                         <span>{slide.tag}</span>
                     </div>
@@ -131,18 +134,18 @@ const AdSpace = () => {
                         {slide.title}
                     </h4>
 
-                    <p className="text-xs text-gray-400 font-normal leading-relaxed mb-3">
+                    <p className="text-xs text-gray-300 font-normal leading-relaxed mb-3">
                         {slide.subtitle}
                     </p>
 
-                    {/* CTA Button */}
-                    <div className="flex items-center justify-between pt-2 border-t border-white/10">
+                    {/* Bottom CTA Bar */}
+                    <div className="flex items-center justify-between pt-2.5 border-t border-white/10">
                         <span className="text-[10px] text-gray-400 font-medium flex items-center gap-1">
-                            <Bot size={12} className="text-cyan-400" />
-                            <span>AI-Powered Learning</span>
+                            <Cpu size={12} className="text-cyan-400" />
+                            <span>AI-Powered Learning Platform</span>
                         </span>
 
-                        <div className="flex items-center gap-1.5 text-xs font-bold text-cyan-400 group-hover:text-white transition-colors">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-cyan-400 group-hover:text-cyan-300 transition-colors">
                             <span>{slide.cta}</span>
                             <ArrowRight size={14} className="transform group-hover:translate-x-1 transition-transform" />
                         </div>
