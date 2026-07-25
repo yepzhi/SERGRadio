@@ -163,12 +163,33 @@ export const radio = new class RadioEngine {
             }
         });
 
-        // 3. Inject CORS *before* request starts (Critical for Chrome/Firefox Visualizer)
+        // 3. Inject CORS & Event Listeners *before* request starts
         if (this.howl._sounds.length > 0 && this.howl._sounds[0]._node) {
-            this.howl._sounds[0]._node.crossOrigin = "anonymous";
+            const node = this.howl._sounds[0]._node;
+            node.crossOrigin = "anonymous";
+
+            // Prevent native HTML5 element stalls/pauses from stopping audio permanently
+            node.onpause = () => {
+                if (this.isPlaying) {
+                    console.log("RadioEngine: HTML5 audio node paused unexpectedly, resuming...");
+                    node.play().catch(e => console.warn("Auto-play node resume failed:", e));
+                }
+            };
+            node.onerror = (e) => {
+                console.error("RadioEngine: HTML5 audio node error", e);
+                if (this.isPlaying) {
+                    node.load();
+                    node.play().catch(() => {});
+                }
+            };
+            node.onstalled = () => {
+                console.warn("RadioEngine: HTML5 audio node stalled");
+                if (this.isPlaying) {
+                    node.play().catch(() => {});
+                }
+            };
         }
 
-        // 4. Start
         // 4. Start
         this.howl.play();
 
@@ -187,10 +208,20 @@ export const radio = new class RadioEngine {
         this.watchdogInterval = setInterval(() => {
             if (!this.howl || !this.isPlaying) return;
 
+            // Auto-resume AudioContext if suspended by browser policy
+            if (Howler.ctx && Howler.ctx.state === 'suspended' && this.isPlaying) {
+                Howler.ctx.resume().catch(() => {});
+            }
+
             const sound = this.howl._sounds[0];
             const node = sound ? sound._node : null;
 
-            if (!node || node.paused) return; // Don't check if intentionally paused
+            if (!node) return;
+
+            // If audio node paused while we are supposed to be playing, attempt soft resume
+            if (node.paused && this.isPlaying) {
+                node.play().catch(() => {});
+            }
 
             const currentTime = node.currentTime;
 
