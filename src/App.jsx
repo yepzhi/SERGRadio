@@ -92,6 +92,10 @@ function App() {
   const [isReady, setIsReady] = useState(false); // Radio ready state
   const [showInfo, setShowInfo] = useState(false); // Info Modal State
 
+  // Server Sleep & 15s Countdown State (v3.2.7)
+  const [isServerSleeping, setIsServerSleeping] = useState(false);
+  const [sleepCountdown, setSleepCountdown] = useState(15);
+
   // PWA State removed
 
   // Visualizer Ref
@@ -102,30 +106,73 @@ function App() {
   // Listeners Count State
   const [listeners, setListeners] = useState(0);
 
+  // Detect server sleep during audio buffering / startup
+  useEffect(() => {
+    let timer;
+    if (isBuffering) {
+      timer = setTimeout(() => {
+        setIsServerSleeping(true);
+      }, 1500);
+    } else if (!isBuffering && isPlaying) {
+      setIsServerSleeping(false);
+    }
+    return () => clearTimeout(timer);
+  }, [isBuffering, isPlaying]);
+
+  // 15 sec countdown timer tick
+  useEffect(() => {
+    let interval;
+    if (isServerSleeping) {
+      setSleepCountdown(15);
+      interval = setInterval(() => {
+        setSleepCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(interval);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    } else {
+      setSleepCountdown(15);
+    }
+    return () => clearInterval(interval);
+  }, [isServerSleeping]);
+
   // Poll for listener count
   useEffect(() => {
     const fetchListeners = async () => {
       try {
-        const res = await fetch('https://yepzhi-sergradio-sync.hf.space/');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2500);
+
+        const res = await fetch('https://yepzhi-sergradio-sync.hf.space/', { signal: controller.signal });
+        clearTimeout(timeoutId);
+
         if (res.ok) {
           const data = await res.json();
           // Combine both quality streams for total listener count
           const totalListeners = (data.listeners_320 || 0) + (data.listeners_192 || 0);
           setListeners(totalListeners);
-          // Auto-update track info from server (Metadata Sync)
           if (data.now_playing) {
             setTrack(data.now_playing);
           }
+        } else {
+          if (isPlaying || isBuffering) {
+            setIsServerSleeping(true);
+          }
         }
       } catch (e) {
-        // Silent fail
+        if (isPlaying || isBuffering) {
+          setIsServerSleeping(true);
+        }
       }
     };
 
     fetchListeners();
     const interval = setInterval(fetchListeners, 5000); // Poll every 5s for faster metadata updates
     return () => clearInterval(interval);
-  }, []);
+  }, [isPlaying, isBuffering]);
 
   // Update Media Session Metadata
   useEffect(() => {
@@ -332,9 +379,24 @@ function App() {
 
       {/* Loading Screen - Waking Radio */}
       {!isReady && (
-        <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50">
-          <h1 className="logo-text text-5xl font-black tracking-tighter mb-4 text-white">SERGRadio</h1>
-          <div className="text-blue-500 animate-pulse text-lg mb-4">Waking up the radio...</div>
+        <div className="fixed inset-0 bg-black flex flex-col items-center justify-center z-50 p-6 text-center">
+          <h1 className="logo-text text-5xl md:text-6xl font-black tracking-tighter mb-4 text-white">
+            <span className="text-blue-500 serg-blue-text">SERG</span>
+            <span className="radio-gradient-text">Radio</span>
+          </h1>
+
+          {/* 15 sec countdown badge */}
+          <div className="flex items-center gap-2 mb-2 bg-blue-500/10 border border-blue-500/30 px-3 py-1 rounded-full animate-pulse">
+            <span className="w-2 h-2 rounded-full bg-cyan-400"></span>
+            <span className="text-xs uppercase font-bold tracking-widest text-cyan-400">15 sec. countdown</span>
+          </div>
+
+          <div className="text-blue-400 font-bold text-xl md:text-2xl mb-2 animate-pulse">Waking up server</div>
+
+          <div className="text-2xl md:text-3xl font-black font-mono text-white mb-6 tracking-tight">
+            <span className="text-blue-500 font-bold">{sleepCountdown}</span> to live Jamz!
+          </div>
+
           <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mb-8"></div>
 
           {/* Failsafe Button - shows after 3s */}
@@ -383,7 +445,7 @@ function App() {
           <div className={`flex items-center space-x-2 px-3 py-1.5 rounded-full bg-black/60 border border-white/10 shadow-lg backdrop-blur-md transition-all duration-300 ${isBuffering ? 'animate-pulse border-emerald-500/50' : ''}`}>
             <div className={`w-1.5 h-1.5 rounded-full ${isBuffering ? 'bg-yellow-500' : (!isOnline ? 'bg-red-500' : 'bg-emerald-400')}`}></div>
             <span className={`text-[9px] uppercase tracking-widest font-bold ${isBuffering ? 'text-yellow-500' : (!isOnline ? 'text-red-500' : 'text-emerald-400')}`}>
-              {isBuffering ? 'Reconnecting...' : (!isOnline ? 'Unstable' : 'Stable')}
+              {isServerSleeping ? 'Waking Server...' : (isBuffering ? 'Reconnecting...' : (!isOnline ? 'Unstable' : 'Stable'))}
             </span>
           </div>
           {/* Data Rate Indicator */}
@@ -419,7 +481,7 @@ function App() {
         <div className="absolute top-6 right-6 z-20 flex flex-col items-end gap-1">
           <div className={`text-xs uppercase tracking-[2px] font-bold flex items-center gap-2 leading-none ${isLive ? 'text-blue-500' : 'text-gray-500'}`}>
             {isPlaying && isLive && <span className="w-2 h-2 rounded-full bg-blue-600 live-dot-anim relative top-[0.5px]"></span>}
-            {isPlaying ? (isBuffering ? 'BUFFERING...' : 'LIVE') : ''}
+            {isPlaying ? (isServerSleeping ? 'WAKING UP...' : (isBuffering ? 'BUFFERING...' : 'LIVE')) : ''}
           </div>
           {/* HD Radio Logo - Top Right */}
           <img src="/SERGRadio/hd-logo.png" alt="HD Radio" className="h-5 opacity-90 mt-1" />
@@ -434,6 +496,33 @@ function App() {
             </div>
           )}
         </div>
+
+        {/* Server Sleep 15s Countdown Overlay/Banner (v3.2.7) */}
+        {isServerSleeping && (
+          <div className="w-full max-w-xs md:max-w-sm bg-gradient-to-b from-blue-950/95 via-gray-900/95 to-black/95 border border-blue-500/40 rounded-2xl p-4 my-2 backdrop-blur-xl shadow-2xl flex flex-col items-center justify-center text-center animate-in fade-in zoom-in duration-300 relative z-30">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+              <span className="text-[10px] uppercase font-bold tracking-widest text-cyan-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">
+                15 sec. countdown
+              </span>
+            </div>
+            
+            <h3 className="text-sm md:text-base font-black tracking-tight text-white mb-0.5">
+              Waking up server
+            </h3>
+            
+            <div className="text-lg md:text-xl font-black text-white font-mono tracking-tight my-1">
+              <span className="text-blue-400 text-2xl font-bold">{sleepCountdown}</span> to live Jamz!
+            </div>
+
+            <div className="w-full bg-gray-800/80 h-1.5 rounded-full overflow-hidden mt-2">
+              <div 
+                className="bg-gradient-to-r from-blue-600 via-cyan-400 to-blue-500 h-full transition-all duration-1000 ease-linear"
+                style={{ width: `${(sleepCountdown / 15) * 100}%` }}
+              ></div>
+            </div>
+          </div>
+        )}
 
         {/* Play Button */}
         <button
