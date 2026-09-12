@@ -412,6 +412,9 @@ function App() {
             <div className="text-gray-400 text-xs md:text-sm font-medium tracking-wide mt-2">
               Powering up audio engines. Please wait <span className="text-white font-bold">{sleepCountdown}s</span>...
             </div>
+            <div className="text-cyan-400 text-xs font-semibold tracking-wide mt-1">
+              Please refresh site
+            </div>
           </div>
 
           {/* Failsafe Button - shows after 3s */}
@@ -529,6 +532,10 @@ function App() {
             <div className="text-lg md:text-xl font-black text-white font-mono tracking-tight my-1">
               <span className="text-blue-400 text-2xl font-bold">{sleepCountdown}</span> to live Jamz!
             </div>
+
+            <p className="text-xs text-cyan-300 font-semibold tracking-wide mt-1">
+              Please refresh site
+            </p>
 
             <div className="w-full bg-gray-800/80 h-1.5 rounded-full overflow-hidden mt-2">
               <div 
