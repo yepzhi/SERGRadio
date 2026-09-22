@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { radio } from './audio/RadioEngine';
-import { Play, Pause, User, RefreshCw, WifiOff, Info, Activity, Speaker } from 'lucide-react';
+import { Play, Pause, User, RefreshCw, WifiOff, Info, Activity, Speaker, X } from 'lucide-react';
 import AdSpace from './components/AdSpace';
 import './App.css';
 
@@ -95,6 +95,7 @@ function App() {
   // Server Sleep & 15s Countdown State (v3.2.7)
   const [isServerSleeping, setIsServerSleeping] = useState(false);
   const [sleepCountdown, setSleepCountdown] = useState(15);
+  const [sleepBannerDismissed, setSleepBannerDismissed] = useState(false);
 
   // PWA State removed
 
@@ -109,15 +110,15 @@ function App() {
   // Detect server sleep during audio buffering / startup
   useEffect(() => {
     let timer;
-    if (isBuffering) {
+    if (isBuffering && !isPlaying && !sleepBannerDismissed) {
       timer = setTimeout(() => {
         setIsServerSleeping(true);
-      }, 1500);
-    } else if (!isBuffering && isPlaying) {
+      }, 5000);
+    } else if (isPlaying || !isBuffering) {
       setIsServerSleeping(false);
     }
     return () => clearTimeout(timer);
-  }, [isBuffering, isPlaying]);
+  }, [isBuffering, isPlaying, sleepBannerDismissed]);
 
   // 15 sec countdown timer tick
   useEffect(() => {
@@ -158,12 +159,14 @@ function App() {
             setTrack(data.now_playing);
           }
         } else {
-          if (isPlaying || isBuffering) {
+          // NEVER show server sleeping banner if music is already running!
+          if (!isPlaying && isBuffering && !sleepBannerDismissed) {
             setIsServerSleeping(true);
           }
         }
       } catch (e) {
-        if (isPlaying || isBuffering) {
+        // NEVER show server sleeping banner if music is already running!
+        if (!isPlaying && isBuffering && !sleepBannerDismissed) {
           setIsServerSleeping(true);
         }
       }
@@ -172,7 +175,7 @@ function App() {
     fetchListeners();
     const interval = setInterval(fetchListeners, 5000); // Poll every 5s for faster metadata updates
     return () => clearInterval(interval);
-  }, [isPlaying, isBuffering]);
+  }, [isPlaying, isBuffering, sleepBannerDismissed]);
 
   // Update Media Session Metadata
   useEffect(() => {
@@ -232,6 +235,7 @@ function App() {
     radio.onPlay = () => {
       setIsBuffering(false);
       setIsLive(true);
+      setIsServerSleeping(false);
     };
 
     // Watchdog Buffering Hook
@@ -361,7 +365,9 @@ function App() {
 
     if (isPlaying) {
       radio.pause();
+      setIsServerSleeping(false);
     } else {
+      setSleepBannerDismissed(false);
       radio.play();
     }
     setIsPlaying(!isPlaying);
@@ -516,8 +522,22 @@ function App() {
         </div>
 
         {/* Server Sleep 15s Countdown Overlay/Banner (v3.2.7) */}
-        {isServerSleeping && (
+        {isServerSleeping && !isPlaying && !sleepBannerDismissed && (
           <div className="w-full max-w-xs md:max-w-sm bg-gradient-to-b from-blue-950/95 via-gray-900/95 to-black/95 border border-blue-500/40 rounded-2xl p-4 my-2 backdrop-blur-xl shadow-2xl flex flex-col items-center justify-center text-center animate-in fade-in zoom-in duration-300 relative z-30">
+            {/* Close Button X */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsServerSleeping(false);
+                setSleepBannerDismissed(true);
+              }}
+              className="absolute top-3 right-3 p-1.5 rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors cursor-pointer z-10"
+              title="Cerrar anuncio"
+              aria-label="Cerrar anuncio"
+            >
+              <X size={16} />
+            </button>
+
             <div className="flex items-center gap-2 mb-1">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
               <span className="text-[10px] uppercase font-bold tracking-widest text-cyan-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-500/20">
