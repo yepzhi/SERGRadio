@@ -1,5 +1,6 @@
 import os
 import time
+import asyncio
 import threading
 import random
 import json
@@ -212,21 +213,22 @@ def broadcast_stream():
             
             # DELAYED METADATA UPDATE
             # The server buffers ~20s of audio before it reaches the client.
-            def update_meta_delayed():
+            def update_meta_delayed(t_ref=track, p_ref=local_path, f_size=file_size):
                  global CURRENT_TRACK_INFO
                  
                  # Calculate Duration using ffprobe (Accurate)
-                 duration_sec = get_track_duration(local_path)
+                 duration_sec = t_ref.get('duration') or get_track_duration(p_ref)
                  if duration_sec == 0:
                      # Fallback estimation
-                     duration_sec = file_size / 40000
+                     duration_sec = f_size / 40000
 
-                 # Add duration and start time to track info
-                 track['duration'] = duration_sec
-                 track['started_at'] = time.time()
-                 
-                 CURRENT_TRACK_INFO = track
-                 print(f"METADATA UPDATED: {track['title']} (Duration: {duration_sec/60:.1f}m)")
+                 t_ref['duration'] = duration_sec
+                 CURRENT_TRACK_INFO = {
+                     **t_ref,
+                     'duration': duration_sec,
+                     'started_at': time.time()
+                 }
+                 print(f"METADATA UPDATED: {t_ref['title']} (Duration: {duration_sec/60:.1f}m)")
             
             # 5 second delay (Reduced due to smaller burst buffer)
             threading.Timer(5.0, update_meta_delayed).start()
@@ -252,8 +254,8 @@ def broadcast_stream():
             ]
 
             try:
-                p320 = subprocess.Popen(cmd_320, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                p192 = subprocess.Popen(cmd_192, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                p320 = subprocess.Popen(cmd_320, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+                p192 = subprocess.Popen(cmd_192, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
                 
                 start_time = time.time()
                 
@@ -264,13 +266,13 @@ def broadcast_stream():
                             if not chunk: break
                             buffer_deque.append(chunk)
                             dead = []
-                            for q in clients_list:
+                            for q in list(clients_list):
                                 try:
-                                    if q.full():
-                                        try: q.get_nowait()
-                                        except Empty: pass
                                     q.put_nowait(chunk)
-                                except: dead.append(q)
+                                except Full:
+                                    dead.append(q)
+                                except Exception:
+                                    dead.append(q)
                             for d in dead:
                                 if d in clients_list: clients_list.remove(d)
                     except: pass
@@ -303,7 +305,7 @@ threading.Thread(target=track_manager, daemon=True).start()
 threading.Thread(target=broadcast_stream, daemon=True).start()
 
 @app.get("/")
-def index():
+async def index():
     now_playing = {
         "title": CURRENT_TRACK_INFO.get("title", "Unknown"),
         "artist": CURRENT_TRACK_INFO.get("artist", "SERGRadio"),
@@ -312,8 +314,9 @@ def index():
     }
     return {
         "status": "radio_active",
-        "version": "3.0.0",
+        "version": "3.0.1",
         "mode": "dual_quality_stream",
+        "listeners": len(CLIENTS) + len(CLIENTS_192),
         "listeners_320": len(CLIENTS),
         "listeners_192": len(CLIENTS_192),
         "queue_size": READY_TRACKS.qsize(),
@@ -322,7 +325,7 @@ def index():
     }
 
 @app.get("/stream")
-def stream_audio(q: str = "320"):
+async def stream_audio(q: str = "320"):
     # Quality Selection
     if q == "192":
         target_clients = CLIENTS_192
@@ -331,23 +334,32 @@ def stream_audio(q: str = "320"):
         target_clients = CLIENTS
         target_burst = BURST_BUFFER
 
-    def event_stream():
-        # Large queue for maximum stability (~6-7 min buffer)
-        client_q = Queue(maxsize=1000)
-        
-        # Burst-fill
+    async def event_stream():
+        # Client queue (~2-3 min max lag before auto-eviction of dead connections)
+        client_q = Queue(maxsize=100)
         backlog = list(target_burst)
-        for chunk in backlog:
-            try: client_q.put_nowait(chunk)
-            except Full: break
-        
         target_clients.append(client_q)
         
         try:
+            # Instant single-write burst flush (~20s of audio in first packet)
+            if backlog:
+                yield b"".join(backlog)
+
             while True:
-                chunk = client_q.get()
-                yield chunk
-        except Exception as e:
+                while client_q.empty():
+                    if client_q not in target_clients:
+                        return
+                    await asyncio.sleep(0.04)
+
+                chunks = []
+                while not client_q.empty():
+                    try:
+                        chunks.append(client_q.get_nowait())
+                    except Empty:
+                        break
+                if chunks:
+                    yield b"".join(chunks)
+        except (asyncio.CancelledError, GeneratorExit, Exception):
             pass
         finally:
             if client_q in target_clients:
@@ -357,6 +369,7 @@ def stream_audio(q: str = "320"):
         "Cache-Control": "no-cache, no-store, must-revalidate",
         "Pragma": "no-cache",
         "Expires": "0",
+        "X-Accel-Buffering": "no",
         "Internal-Topic": "radio-stream",
         "Connection": "keep-alive",
         "Content-Type": "audio/mpeg",

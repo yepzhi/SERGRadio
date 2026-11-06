@@ -233,6 +233,7 @@ function App() {
     };
 
     radio.onPlay = () => {
+      setIsPlaying(true);
       setIsBuffering(false);
       setIsLive(true);
       setIsServerSleeping(false);

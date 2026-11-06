@@ -25,6 +25,14 @@ export const radio = new class RadioEngine {
         this.onBufferingChange = null; // UI Hook
         this.onNetworkStats = null; // New UI Hook for real data usage
 
+        // Self-Healing Stream State
+        this.shouldBePlaying = false;
+        this.isReconnecting = false;
+        this.lastReconnectTime = 0;
+        this.reconnectTimer = null;
+        this.inPlaceFailCount = 0;
+        this._initialized = false;
+
         // Network Stats State
         this.lastBufferedParams = { end: 0, total: 0 };
         this.sessionTotalBytes = 0;
@@ -43,12 +51,94 @@ export const radio = new class RadioEngine {
 
     reconnect() {
         console.warn("RadioEngine: Manual/Forced Reconnect");
+        this.shouldBePlaying = true;
+        this.isReconnecting = false;
         if (this.onBufferingChange) this.onBufferingChange(true);
-        this.pause();
-        setTimeout(() => this.play(), 100);
+        this._healStream('manual', true);
+    }
+
+    _scheduleReconnect(delayMs = 1500, reason = 'auto') {
+        if (!this.shouldBePlaying) return;
+        if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+        if (this.onBufferingChange) this.onBufferingChange(true);
+        this.reconnectTimer = setTimeout(() => {
+            this.reconnectTimer = null;
+            if (this.shouldBePlaying) {
+                this._healStream(reason);
+            }
+        }, delayMs);
+    }
+
+    _healStream(reason = 'auto', forceNow = false) {
+        if (!this.shouldBePlaying) return;
+
+        const now = Date.now();
+        if (!forceNow && this.isReconnecting && (now - this.lastReconnectTime < 3500)) {
+            return;
+        }
+
+        if (this.reconnectTimer) {
+            clearTimeout(this.reconnectTimer);
+            this.reconnectTimer = null;
+        }
+
+        this.isReconnecting = true;
+        this.lastReconnectTime = now;
+        console.warn(`RadioEngine: Healing live stream (reason: ${reason})...`);
+
+        if (this.onBufferingChange) this.onBufferingChange(true);
+        this._unlockAudioContext();
+
+        const node = this.howl && this.howl._sounds && this.howl._sounds[0]
+            ? this.howl._sounds[0]._node
+            : null;
+
+        // Reuse the existing user-blessed HTML5 <audio> element so browsers never block auto-reconnect
+        if (node && this.inPlaceFailCount < 3) {
+            try {
+                const freshUrl = `${this.streamUrl}?q=${this.currentQuality}&t=${Date.now()}`;
+                this.lastBufferedParams = { end: 0, total: 0 };
+                node.crossOrigin = "anonymous";
+                node.src = freshUrl;
+                node.load();
+
+                const playPromise = node.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        this.isPlaying = true;
+                        this.isReconnecting = false;
+                        this.inPlaceFailCount = 0;
+                        if (this.onPlay) this.onPlay();
+                        this._setupMediaSession();
+                        this._connectVisualizer();
+                    }).catch((err) => {
+                        console.warn("RadioEngine: In-place stream reload rejected, scheduling retry:", err);
+                        this.inPlaceFailCount++;
+                        this.isReconnecting = false;
+                        this._scheduleReconnect(2000, 'inplace-play-rejected');
+                    });
+                } else {
+                    this.isPlaying = true;
+                    this.isReconnecting = false;
+                }
+                return;
+            } catch (err) {
+                console.warn("RadioEngine: In-place reload threw error, recreating Howl:", err);
+                this.inPlaceFailCount++;
+            }
+        }
+
+        // Fallback: full Howl recreation
+        this.inPlaceFailCount = 0;
+        this.isReconnecting = false;
+        this.isPlaying = false;
+        this._startLiveStream();
     }
 
     async init() {
+        if (this._initialized) return;
+        this._initialized = true;
+
         const saved = localStorage.getItem('serg_quality');
         if (saved) {
             this.currentQuality = saved;
@@ -78,7 +168,7 @@ export const radio = new class RadioEngine {
 
         if (this.onQualityChange) this.onQualityChange(q);
 
-        if (this.isPlaying) {
+        if (this.isPlaying || this.shouldBePlaying) {
             this.reconnect();
         }
     }
@@ -96,6 +186,25 @@ export const radio = new class RadioEngine {
     }
 
     _setupNetworkListeners() {
+        window.addEventListener('online', () => {
+            if (this.shouldBePlaying) {
+                console.log("RadioEngine: Network back online, healing stream...");
+                this._healStream('network-online', true);
+            }
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && this.shouldBePlaying) {
+                this._unlockAudioContext();
+                const node = this.howl && this.howl._sounds && this.howl._sounds[0]
+                    ? this.howl._sounds[0]._node
+                    : null;
+                if (!node || node.paused || node.ended || node.error) {
+                    this._healStream('visibility-resume');
+                }
+            }
+        });
+
         if (navigator.connection) {
             navigator.connection.addEventListener('change', () => {
                 if (!localStorage.getItem('serg_quality')) {
@@ -109,14 +218,29 @@ export const radio = new class RadioEngine {
                             this.setQuality('320');
                         }
                     }
+                } else if (this.shouldBePlaying) {
+                    this._scheduleReconnect(1000, 'connection-change');
                 }
             });
         }
     }
 
     play() {
-        if (this.isPlaying) return;
+        this.shouldBePlaying = true;
+        if (this.isPlaying && !this.isReconnecting) return;
 
+        // If we already have a blessed HTML5 audio node, heal it in-place
+        if (this.howl && this.howl._sounds && this.howl._sounds[0] && this.howl._sounds[0]._node) {
+            this._healStream('play-resume', true);
+            this._startBufferingWatchdog();
+            this._startSilenceMonitor();
+            return;
+        }
+
+        this._startLiveStream();
+    }
+
+    _startLiveStream() {
         console.log("RadioEngine: Starting Stream...");
         if (this.onLoadStart) this.onLoadStart();
 
@@ -126,40 +250,42 @@ export const radio = new class RadioEngine {
         // 1. Unload previous instance to ensure fresh live edge
         if (this.howl) {
             this.howl.unload();
+            this.howl = null;
         }
 
-        // 2. Create new Howl instance
+        this.lastBufferedParams = { end: 0, total: 0 };
+
+        // 2. Create new Howl instance with preload: false so CORS is injected BEFORE network fetch
         this.howl = new Howl({
             src: [`${this.streamUrl}?q=${this.currentQuality}&t=${Date.now()}`],
             format: ['mp3'],
             html5: true, // Required for long streams & iOS background audio
+            preload: false, // Inject crossOrigin BEFORE network request starts
             volume: this.volume,
-            autoplay: false, // We handle play manually to inject CORS
+            autoplay: false,
             onplay: () => {
                 console.log("RadioEngine: Stream Playing!");
                 this.isPlaying = true;
+                this.isReconnecting = false;
+                this.inPlaceFailCount = 0;
                 if (this.onPlay) this.onPlay();
                 this._setupMediaSession();
                 this._connectVisualizer();
             },
             onloaderror: (id, err) => {
                 console.error("RadioEngine: Stream Connection Error", err);
-                // Simple retry
-                setTimeout(() => this.play(), 2000);
+                this.isReconnecting = false;
+                this._scheduleReconnect(2000, 'onloaderror');
             },
             onplayerror: (id, err) => {
                 console.warn("RadioEngine: Play blocked by browser, retrying...", err);
-                // Force unlock and retry
                 this._unlockAudioContext();
-                setTimeout(() => {
-                    if (this.howl) this.howl.play();
-                }, 100);
+                this._scheduleReconnect(1000, 'onplayerror');
             },
             onend: () => {
-                console.log("RadioEngine: Stream ended (connection lost?)");
-                this.isPlaying = false;
-                // Auto-reconnect
-                setTimeout(() => this.play(), 1000);
+                console.log("RadioEngine: Stream ended (connection closed), reconnecting...");
+                this.isReconnecting = false;
+                this._scheduleReconnect(500, 'onend');
             }
         });
 
@@ -167,30 +293,45 @@ export const radio = new class RadioEngine {
         if (this.howl._sounds.length > 0 && this.howl._sounds[0]._node) {
             const node = this.howl._sounds[0]._node;
             node.crossOrigin = "anonymous";
+            node.preload = "auto";
 
             // Prevent native HTML5 element stalls/pauses from stopping audio permanently
             node.onpause = () => {
-                if (this.isPlaying) {
-                    console.log("RadioEngine: HTML5 audio node paused unexpectedly, resuming...");
-                    node.play().catch(e => console.warn("Auto-play node resume failed:", e));
+                if (this.shouldBePlaying && !this.isReconnecting) {
+                    if (node.ended || node.error) {
+                        this._scheduleReconnect(300, 'node-ended-or-error-onpause');
+                    } else {
+                        console.log("RadioEngine: HTML5 audio node paused unexpectedly, resuming...");
+                        node.play().catch(() => {
+                            this._scheduleReconnect(1000, 'node-onpause-play-failed');
+                        });
+                    }
                 }
             };
             node.onerror = (e) => {
                 console.error("RadioEngine: HTML5 audio node error", e);
-                if (this.isPlaying) {
-                    node.load();
-                    node.play().catch(() => {});
+                if (this.shouldBePlaying) {
+                    this.isReconnecting = false;
+                    this._scheduleReconnect(1500, 'node-onerror');
                 }
             };
             node.onstalled = () => {
                 console.warn("RadioEngine: HTML5 audio node stalled");
-                if (this.isPlaying) {
+                if (this.shouldBePlaying && !this.isReconnecting) {
                     node.play().catch(() => {});
                 }
             };
+            node.onplaying = () => {
+                this.isPlaying = true;
+                this.isReconnecting = false;
+                this.inPlaceFailCount = 0;
+                if (this.onBufferingChange) this.onBufferingChange(false);
+                if (this.onPlay) this.onPlay();
+            };
         }
 
-        // 4. Start
+        // 4. Load & Start
+        this.howl.load();
         this.howl.play();
 
         // 5. Start Watchdog
@@ -206,98 +347,80 @@ export const radio = new class RadioEngine {
         let lastTime = -1;
 
         this.watchdogInterval = setInterval(() => {
-            if (!this.howl || !this.isPlaying) return;
+            if (!this.howl || !this.shouldBePlaying) return;
 
             // Auto-resume AudioContext if suspended by browser policy
-            if (Howler.ctx && Howler.ctx.state === 'suspended' && this.isPlaying) {
+            if (Howler.ctx && Howler.ctx.state === 'suspended' && this.shouldBePlaying) {
                 Howler.ctx.resume().catch(() => {});
             }
 
             const sound = this.howl._sounds[0];
             const node = sound ? sound._node : null;
 
-            if (!node) return;
-
-            // If audio node paused while we are supposed to be playing, attempt soft resume
-            if (node.paused && this.isPlaying) {
-                node.play().catch(() => {});
+            if (!node) {
+                this._scheduleReconnect(1000, 'missing-node');
+                return;
             }
 
             const currentTime = node.currentTime;
 
-            // Condition: Time hasn't moved significant amount
-            if (Math.abs(currentTime - lastTime) < 0.05) {
+            // Condition: Time hasn't moved significant amount or node is paused/errored
+            if (Math.abs(currentTime - lastTime) < 0.05 || node.paused || node.ended || node.error) {
                 stuckTime += 1000;
                 // Notify UI: Buffering
-                if (stuckTime >= 1000) { // Only show buffering if stuck > 1s
+                if (stuckTime >= 2000) {
                     if (this.onBufferingChange) this.onBufferingChange(true);
                 }
+
+                // Step 1 (at 3s stuck): attempt soft play resume if paused without error/EOF
+                if (stuckTime === 3000 && node.paused && !node.ended && !node.error && !this.isReconnecting) {
+                    this._unlockAudioContext();
+                    node.play().catch(() => {});
+                }
+
+                // Step 2 (at 6s stuck): soft resume did not advance currentTime -> force fresh stream URL reload!
+                if (stuckTime >= 6000) {
+                    console.warn("RadioEngine: Watchdog detected stalled stream (>6s), forcing stream heal...");
+                    stuckTime = 0;
+                    this._healStream('watchdog-stuck', true);
+                }
             } else {
-                // Recovered
-                if (stuckTime > 0) {
+                // Recovered & advancing normally!
+                if (stuckTime > 0 || this.isReconnecting) {
                     if (this.onBufferingChange) this.onBufferingChange(false);
                 }
                 stuckTime = 0;
+                this.isReconnecting = false;
+                this.inPlaceFailCount = 0;
+                this.isPlaying = true;
             }
 
             lastTime = currentTime;
 
-            // TRIGGER: Force Reconnect if stuck > 5s
-            // DISABLED by user request (v2.7.4) - avoids jumps/restarts
-            /*
-            if (stuckTime > 5000) {
-                console.warn("RadioEngine: Watchdog triggered! Stream stuck > 5s. force reconnecting...");
-                stuckTime = 0;
-    
-                // CRITICAL: Clean stop to reset isPlaying state so play() works
-                this.pause();
-    
-                setTimeout(() => this.play(), 100); // Re-init
-            }
-            */
-
             // --- REAL NETWORK CONSUMPTION TRACKING (v2.8.4) ---
             try {
-                // Calculate total buffered duration
-                let totalBuffered = 0;
                 const ranges = node.buffered;
-                for (let i = 0; i < ranges.length; i++) {
-                    totalBuffered += (ranges.end(i) - ranges.start(i));
-                }
-
-                // Delta = New audio downloaded this second (approx)
-                // Note: 'totalBuffered' grows as we download, but implies we have the data.
-                // However, since we play it, it might get evicted? No, usually kept until full.
-                // Better metric: 'buffered.end(ranges.length-1)' tracks the leading edge.
-
-                // Let's use the leading edge of the last buffer range
                 let leadingEdge = 0;
                 if (ranges.length > 0) {
                     leadingEdge = ranges.end(ranges.length - 1);
                 }
-
-                // If leading edge moved 5s, we downloaded 5s of audio (burst).
-                // If it moved 1s, we downloaded 1s (steady).
 
                 let secondsDownloaded = 0;
                 if (this.lastBufferedParams.end > 0) {
                     secondsDownloaded = leadingEdge - this.lastBufferedParams.end;
                 }
 
-                // Handling seek/reset: if negative, ignore
                 if (secondsDownloaded < 0) secondsDownloaded = 0;
 
-                // Calculate Bytes (320kbps = 40KB/s)
-                const bytesDownloaded = secondsDownloaded * 40000;
+                const bytesPerSecond = this.currentQuality === '192' ? 24000 : 40000;
+                const bytesDownloaded = secondsDownloaded * bytesPerSecond;
                 this.sessionTotalBytes += bytesDownloaded;
 
-                // Update State
                 this.lastBufferedParams.end = leadingEdge;
 
-                // Callback
                 if (this.onNetworkStats) {
                     this.onNetworkStats({
-                        speed: bytesDownloaded, // Bytes per second
+                        speed: bytesDownloaded,
                         total: this.sessionTotalBytes
                     });
                 }
@@ -367,12 +490,21 @@ export const radio = new class RadioEngine {
             this.wasPlayingBeforeDisconnect = true;
         }
 
+        this.shouldBePlaying = false;
+        this.isPlaying = false;
+        this.isReconnecting = false;
+
+        if (this.reconnectTimer) {
+            clearTimeout(this.reconnectTimer);
+            this.reconnectTimer = null;
+        }
+
         if (this.howl) {
             this.howl.unload(); // Truly stop to save bandwidth
             this.howl = null;
         }
-        this.isPlaying = false;
         if (this.watchdogInterval) clearInterval(this.watchdogInterval);
+        if (this.onBufferingChange) this.onBufferingChange(false);
     }
 
     setVolume(val) {
